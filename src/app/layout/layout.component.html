@@ -1,0 +1,19 @@
+<app-header (sidebarEvent)="drawer.toggle()"></app-header>
+
+<mat-sidenav-container hasBackdrop="false">
+  <mat-sidenav #drawer mode="side" opened="true">
+
+    <mat-nav-list>
+      @for (menu of menus; track menu) {
+      <a mat-list-item (click)="navigateTo(menu.route)">
+        {{menu.displayName}}
+        <mat-icon>{{ menu.iconName }}</mat-icon>
+      </a>
+      }
+    </mat-nav-list>
+
+  </mat-sidenav>
+  <mat-sidenav-content>
+    <router-outlet></router-outlet>
+  </mat-sidenav-content>
+</mat-sidenav-container>
