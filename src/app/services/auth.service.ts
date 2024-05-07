@@ -34,4 +34,15 @@ export class AuthService {
     if (!loggedIn) return false;
     return loggedIn == 'true'? true: false;
   }
+
+  register(
+    username: string, 
+    password: string, 
+    firstName: string, 
+    lastName: string, 
+    email: string, 
+    cellphone: string 
+  ) {
+
+  }
 }

@@ -4,58 +4,110 @@ import { Router } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
-import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { AbstractControl, FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
+import { NgIf } from '@angular/common';
 
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [ReactiveFormsModule, FormsModule, MatCardModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatIconModule],
+  imports: [
+    ReactiveFormsModule, 
+    FormsModule, 
+    MatCardModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatIconModule, 
+    NgIf
+  ],
   templateUrl: './register.component.html',
   styleUrl: './register.component.css'
 })
 export class RegisterComponent {
-  form: FormGroup = new FormGroup({
-    username: new FormControl(''),
-    password: new FormControl(''),
-    repeatPassword: new FormControl(''),
-    firstName: new FormControl(''),
-    lastName: new FormControl(''),
-    email: new FormControl(''),
-    cellphone: new FormControl(''),
-  });
+  hidePassword = true; 
+  hidePasswordRepeat = true; 
+  registerForm = this.formBuilder.group(
+    {
+      username: new FormControl('', [Validators.required]),
+      password: new FormControl('', [
+        Validators.required, 
+        this.RegexValidator(new RegExp('.*\\d.*'), {'noDigit': true}), 
+        this.RegexValidator(new RegExp('.*[a-z].*'), {'noLowercase': true}), 
+        this.RegexValidator(new RegExp('.*[A-Z].*'), {'noUppercase': true}), 
+        this.RegexValidator(new RegExp('.*[@$!%*#?&^_-].*'), {'noSpecialChar': true}), 
+        this.RegexValidator(new RegExp('.{8,}'), {'minLength': true}), 
+      ]),
+      repeatPassword: new FormControl('', [
+        Validators.required, 
+      ]),
+      firstName: new FormControl('', [Validators.required]),
+      lastName: new FormControl('', [Validators.required]),
+      email: new FormControl('', [Validators.required, Validators.email]),
+      cellphone: new FormControl('', [Validators.required]),
+    }, {
+      validators: [this.ConfirmedValidator('password', 'repeatPassword')]
+    }
+  );
+
   submitted = false;
 
   constructor(private authService: AuthService, private formBuilder: FormBuilder, private router: Router) { }
-
+/*
   ngOnInit(): void {
-    this.form = this.formBuilder.group(
-      {
-        username: ['', [Validators.required]],
-        password: ['', [Validators.required]],
-        repeatPassword: ['', [Validators.required]],
-        firstName: ['', [Validators.required]],
-        lastName: ['', [Validators.required]],
-        email: ['', [Validators.required]],
-        cellphone: ['', [Validators.required]],
-      }
-    );
 
+    
     if (this.authService.isAuth()) {
       this.router.navigate(['/home']);
     }
   }
-
+  */
+  RegexValidator(regex: RegExp, error: ValidationErrors): ValidatorFn {
+    return (control: AbstractControl): {[key: string]: any} | null => {
+        if (!control.value) {
+            return null;
+        }
+        const valid = regex.test(control.value);
+        return valid ? null : error;
+    }
+}
+  ConfirmedValidator(controlName: string, matchingControlName: string) {
+    return (formGroup: FormGroup) => {
+      const control = formGroup.controls[controlName];
+      const matchingControl = formGroup.controls[matchingControlName];
+      if (
+        matchingControl.errors &&
+        !matchingControl.errors['notEqualPasswords']
+      ) {
+        return;
+      }
+      if (control.value !== matchingControl.value) {
+        matchingControl.setErrors({ 'notEqualPasswords' : true });
+      } else {
+        matchingControl.setErrors(null);
+      }
+    };
+  }
   onSubmit(): void {
-    console.log(this.form.value);
-    let values = this.form.value;
+    console.log(this.registerForm.value);
+    let values = this.registerForm.value;
     try {
-      this.authService.login(values.username, values.password); 
+      this.authService.register(
+        values.username as string, 
+        values.password as unknown as string,
+        values.firstName as string,
+        values.lastName as string,
+        values.email as string,
+        values.cellphone as string
+      ); 
     } catch (error) {
       // todo show error db
     }
   }
-
+  getPasswordErrorMessage() {
+    return this.registerForm.get('password')?.hasError('required') ? 'You must enter a value' :
+        this.registerForm.get('password')?.hasError('pattern') ? 
+        "Password must contain at least one number, one uppercase and a " + 
+        "lowercase letter and at least 8 characters<br />Password cannot" +
+        "contain whitespace" :
+            '';
+  }
 
 }

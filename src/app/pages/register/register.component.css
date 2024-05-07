@@ -23,6 +23,10 @@ form{
     margin: 1rem;
 }
 
+.password-gap {
+    height: 90px;
+}
+
 .form-group{
     display: flex;
     flex-direction: column;
@@ -39,4 +43,13 @@ a {
 
 mat-form-field + mat-form-field {
     margin-left: 20px;
+}
+.mat-form-field-password{
+    margin-bottom: -1em;
+ }
+.subfield mat-form-field {
+    max-width: 200px;
+}
+mat-error {
+    max-width: 420px;
 }
