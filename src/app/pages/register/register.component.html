@@ -52,29 +52,76 @@
                         registerForm.get('password')?.hasError('minLength') 
                     "
                     >Password must contain:</mat-error>
-                    <mat-error 
-                        *ngIf="registerForm.get('password')?.hasError('noDigit')"
-                        > &nbsp; <mat-icon [inline]="true">cancel</mat-icon>  one number.</mat-error>
-                    <mat-error 
-                        *ngIf="registerForm.get('password')?.hasError('noLowercase')"
-                        > &nbsp; <mat-icon [inline]="true">cancel</mat-icon>  one lowercase letter.</mat-error>
 
                     <mat-error 
-                        *ngIf="registerForm.get('password')?.hasError('noUppercase')"
-                        > &nbsp; <mat-icon [inline]="true">cancel</mat-icon>  one uppercase letter.</mat-error>
+                    class="mat-valid"
+                    *ngIf="
+                        passwordFormatValid('password') && 
+                        !registerForm.get('password')?.hasError('required')
+                    "
+                    >Password is ok <mat-icon [inline]="true">check</mat-icon> </mat-error>
+                    @if (!registerForm.get('password')?.hasError('required') && !passwordFormatValid('password')) {
 
+                        <mat-error 
+                            *ngIf="registerForm.get('password')?.hasError('noDigit')"
+                            > &nbsp; <mat-icon [inline]="true">close</mat-icon>  one number.</mat-error>
+                        <mat-error 
+                            *ngIf="!registerForm.get('password')?.hasError('noDigit')"
+                            class="mat-valid"
+                            > &nbsp; <mat-icon [inline]="true">check</mat-icon>  one number.</mat-error>
+                        <mat-error 
+                            *ngIf="registerForm.get('password')?.hasError('noLowercase')"
+                            > &nbsp; <mat-icon [inline]="true">close</mat-icon>  one lowercase letter.</mat-error>
+                        
+                        <mat-error 
+                            *ngIf="!registerForm.get('password')?.hasError('noLowercase')"
+                            class="mat-valid"
+                            > &nbsp; <mat-icon [inline]="true">check</mat-icon>  one lowercase letter.</mat-error>
+                            
+                        <mat-error 
+                            *ngIf="registerForm.get('password')?.hasError('noUppercase')"
+                            > &nbsp; <mat-icon [inline]="true">close</mat-icon>  one uppercase letter.</mat-error>
+                        
+                        <mat-error 
+                            *ngIf="!registerForm.get('password')?.hasError('noUppercase')"
+                            class="mat-valid"
+                            > &nbsp; <mat-icon [inline]="true">check</mat-icon>  one uppercase letter.</mat-error>
+                        
+                        <mat-error 
+                            *ngIf="registerForm.get('password')?.hasError('noSpecialChar')"
+                            > &nbsp; <mat-icon [inline]="true">close</mat-icon>  one special character.</mat-error>
+                        
+                        <mat-error 
+                            *ngIf="!registerForm.get('password')?.hasError('noSpecialChar')"
+                            class="mat-valid"
+                            > &nbsp; <mat-icon [inline]="true">check</mat-icon>  one special character.</mat-error>
+                        
+                        <mat-error 
+                            *ngIf="registerForm.get('password')?.hasError('minLength')"
+                            > &nbsp; <mat-icon [inline]="true">close</mat-icon>  8 characters.</mat-error>
+                        
+                        <mat-error 
+                            *ngIf="!registerForm.get('password')?.hasError('minLength')"
+                            class="mat-valid"
+                            > &nbsp; <mat-icon [inline]="true">check</mat-icon>  8 characters.</mat-error>
+                        
+                        } 
                     <mat-error 
-                        *ngIf="registerForm.get('password')?.hasError('noSpecialChar')"
-                        > &nbsp; <mat-icon [inline]="true">cancel</mat-icon>  one special character.</mat-error>
-
+                        *ngIf="
+                            registerForm.get('repeatPassword')?.hasError('notEqualPasswords') && 
+                            !registerForm.get('password')?.hasError('required') && 
+                            !registerForm.get('repeatPassword')?.hasError('required') && 
+                            passwordFormatValid('password')
+                        "
+                        > &nbsp; <mat-icon [inline]="true">close</mat-icon> Passwords must be equal.</mat-error>
                     <mat-error 
-                        *ngIf="registerForm.get('password')?.hasError('minLength')"
-                        > &nbsp; <mat-icon [inline]="true">cancel</mat-icon>  8 characters.</mat-error>
-
-                    <mat-error 
-                        *ngIf="registerForm.get('repeatPassword')?.hasError('notEqualPasswords') && 
-                        !registerForm.get('password')?.hasError('required')"
-                        > &nbsp; <mat-icon [inline]="true">cancel</mat-icon> Passwords must be equal.</mat-error>
+                        class="mat-valid"
+                            *ngIf="!registerForm.get('repeatPassword')?.hasError('notEqualPasswords') && 
+                            !registerForm.get('password')?.hasError('required') && 
+                            !registerForm.get('repeatPassword')?.hasError('required') && 
+                            passwordFormatValid('password')
+                        "
+                        >Passwords are equal <mat-icon [inline]="true">check</mat-icon> </mat-error>
                 </div>
             </div>
             

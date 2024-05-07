@@ -90,12 +90,12 @@ export class RegisterComponent {
     let values = this.registerForm.value;
     try {
       this.authService.register(
-        values.username as string, 
-        values.password as unknown as string,
-        values.firstName as string,
-        values.lastName as string,
-        values.email as string,
-        values.cellphone as string
+        values.username, 
+        values.password,
+        values.firstName,
+        values.lastName,
+        values.email,
+        values.cellphone 
       ); 
     } catch (error) {
       // todo show error db
@@ -109,5 +109,14 @@ export class RegisterComponent {
         "contain whitespace" :
             '';
   }
+  passwordFormatValid(identifier: string) : boolean{
+    return !(
+      this.registerForm.get(identifier)?.hasError('noDigit') || 
+      this.registerForm.get(identifier)?.hasError('noLowercase') || 
+      this.registerForm.get(identifier)?.hasError('noSpecialChar') || 
+      this.registerForm.get(identifier)?.hasError('noUppercase') || 
+      this.registerForm.get(identifier)?.hasError('minLength') 
+    ) as boolean ; 
+}
 
 }

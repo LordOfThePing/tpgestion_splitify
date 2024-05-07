@@ -13,6 +13,7 @@ export class AuthService {
   login(username: string, password: string){
     new Promise<void>((resolve, reject) => {
       try {
+        console.log("todo db login")
         // todo db auth
         localStorage.setItem(LOGGEDIN, 'true');
         this.router.navigate(['/home']);
@@ -43,6 +44,14 @@ export class AuthService {
     email: string, 
     cellphone: string 
   ) {
-
+    new Promise<void>((resolve, reject) => {
+      try {
+        // todo db register
+        console.log("todo db register")
+        resolve()
+      } catch (error) {
+        reject(error)
+      }
+    })
   }
 }
