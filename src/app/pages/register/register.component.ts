@@ -57,6 +57,24 @@ export class RegisterComponent {
       this.router.navigate(['/home']);
     }
   }
+  onSubmit(): void {
+    console.log(this.registerForm.value);
+    let values = this.registerForm.value;
+    try {
+      this.authService.register(
+        values.username, 
+        values.password,
+        values.firstName,
+        values.lastName,
+        values.email,
+        values.cellphone 
+      ).then(() => {
+        this.router.navigate(['/login']);
+      }); 
+    } catch (error) {
+      // todo show error db
+    }
+  }
   RegexValidator(regex: RegExp, error: ValidationErrors): ValidatorFn {
     return (control: AbstractControl): {[key: string]: any} | null => {
         if (!control.value) {
@@ -65,7 +83,8 @@ export class RegisterComponent {
         const valid = regex.test(control.value);
         return valid ? null : error;
     }
-}
+
+  }
   ConfirmedValidator(controlName: string, matchingControlName: string) {
     return (formGroup: FormGroup) => {
       const control = formGroup.controls[controlName];
@@ -83,22 +102,7 @@ export class RegisterComponent {
       }
     };
   }
-  onSubmit(): void {
-    console.log(this.registerForm.value);
-    let values = this.registerForm.value;
-    try {
-      this.authService.register(
-        values.username, 
-        values.password,
-        values.firstName,
-        values.lastName,
-        values.email,
-        values.cellphone 
-      ); 
-    } catch (error) {
-      // todo show error db
-    }
-  }
+  
   passwordFormatValid(identifier: string) : boolean{
     return !(
       this.registerForm.get(identifier)?.hasError('noDigit') || 
@@ -107,6 +111,6 @@ export class RegisterComponent {
       this.registerForm.get(identifier)?.hasError('noUppercase') || 
       this.registerForm.get(identifier)?.hasError('minLength') 
     ) as boolean ; 
-}
+  }
 
 }
