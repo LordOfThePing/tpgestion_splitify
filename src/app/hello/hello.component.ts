@@ -1,11 +1,14 @@
 import { Component, OnInit } from '@angular/core';
-import { BackendService } from '../backend.service';
+import { BackendService } from '../services/backend/backend.service';
+import { NgIf } from '@angular/common';
 
 @Component({
   selector: 'app-hello',
+  standalone: true,
+  imports: [NgIf], 
   templateUrl: './hello.component.html',
 })
-export class HelloComponent implements OnInit {
+export class HelloComponent {
   //responseContent es un parámetro que se puede utilizar en la template asociada al componente
   responseContent: string;
 
