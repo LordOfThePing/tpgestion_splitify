@@ -50,15 +50,13 @@ export class RegisterComponent {
   submitted = false;
 
   constructor(private authService: AuthService, private formBuilder: FormBuilder, private router: Router) { }
-/*
+
   ngOnInit(): void {
 
-    
     if (this.authService.isAuth()) {
       this.router.navigate(['/home']);
     }
   }
-  */
   RegexValidator(regex: RegExp, error: ValidationErrors): ValidatorFn {
     return (control: AbstractControl): {[key: string]: any} | null => {
         if (!control.value) {
@@ -100,14 +98,6 @@ export class RegisterComponent {
     } catch (error) {
       // todo show error db
     }
-  }
-  getPasswordErrorMessage() {
-    return this.registerForm.get('password')?.hasError('required') ? 'You must enter a value' :
-        this.registerForm.get('password')?.hasError('pattern') ? 
-        "Password must contain at least one number, one uppercase and a " + 
-        "lowercase letter and at least 8 characters<br />Password cannot" +
-        "contain whitespace" :
-            '';
   }
   passwordFormatValid(identifier: string) : boolean{
     return !(
