@@ -22,8 +22,8 @@ export class BackendService {
   }
 
   // Obtiene todos los users de la DB
-  getUser(username: string): Observable<User> {
-    return this.http.get<User>(`${this.apiUrl}/user/` + username);
+  getUser(username: string): Observable<[User]> {
+    return this.http.get<[User]>(`${this.apiUrl}/user/` + username);
   }
 
   // Obtiene todos los users de la DB

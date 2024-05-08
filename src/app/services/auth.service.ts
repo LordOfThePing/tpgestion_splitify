@@ -29,14 +29,14 @@ export class AuthService {
 
   async login(username: string, password: string) {
     try {
-      const user: User = await this.backendService.getUser(username).toPromise() as User;
-  
-      if (!user) {
+      const user: [User] = await this.backendService.getUser(username).toPromise() as [User];
+      
+      if (!user || !user[0]) {
         console.error('User not found.');
         return Promise.reject('User not found.');
       }
   
-      if (password !== user.password) {
+      if (password !== user[0].password) {
         console.error('Authentication error: Password entered does not match the one in the database.');
         return Promise.reject('Authentication error: Password entered does not match the one in the database.');
       }
