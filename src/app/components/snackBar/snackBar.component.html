@@ -1,0 +1,6 @@
+<div class="{{ this.data.type }}" class="snackbar">
+  <mat-icon [class]="this.icon === 'check' ? 'success' : 'error'">{{
+    this.icon
+  }}</mat-icon>
+  <p>{{ this.data.message }}</p>
+</div>

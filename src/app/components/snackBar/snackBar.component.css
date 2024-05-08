@@ -1,0 +1,27 @@
+.snackbar {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: var(--white);
+}
+
+.snackbar mat-icon {
+    margin: 0px 10px
+}
+
+div p {
+    color: var(--grey-text);
+    font-size: 14px;
+    width: 100%;
+    margin: 0;
+}
+
+.success {
+    color: var(--primary-color);
+}
+
+.error {
+    margin: 0 5px 0 9px !important;
+    z-index: 10000000000000 !important;
+    transform: translateX(-5px);
+}
