@@ -16,8 +16,8 @@
             <td>{{ group.name }}</td>
             <td>{{ group.time_created }}</td>
             <td>
-                <button class="btn btn-primary" (click)="editGroup()">Edit</button>
-                <button class="btn btn-danger" (click)="deleteGroup()">Delete</button>
+                <button class="btn btn-primary" (click)="editGroup()" hidden >Edit</button>
+                <button class="btn btn-danger" (click)="deleteGroup()" hidden >Delete</button>
             </td>
         </tr>
     </tbody>
