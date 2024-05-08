@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { catchError, tap } from 'rxjs';
 import { UserService } from './user.service';
 import { User } from '../../classes/user';
+import { SnackbarService } from './snackbar.service';
 
 const LOGGEDIN = 'splitifyLoggedIn'
 
@@ -13,27 +14,30 @@ const LOGGEDIN = 'splitifyLoggedIn'
 export class AuthService {
   totalAngularPackages: any;
 
-  constructor(private router: Router, private http: HttpClient, private userService: UserService) { }
+  constructor(private router: Router, private http: HttpClient, private userService: UserService, private snackBarService: SnackbarService) { }
 
   async login(username: string, password: string) {
     try {
-      /* const user: [User] = await this.userService.getUser(username).toPromise() as [User];
+      const user: [User] = await this.userService.getUser(username).toPromise() as [User];
 
       if (!user || !user[0]) {
         console.error('User not found.');
+        this.snackBarService.open('Wrong username/password.', 'error');
         return Promise.reject('User not found.');
       }
 
       if (password !== user[0].password) {
         console.error('Authentication error: Password entered does not match the one in the database.');
+        this.snackBarService.open('Wrong username/password.', 'error');
         return Promise.reject('Authentication error: Password entered does not match the one in the database.');
-      } */
+      } 
 
       localStorage.setItem(LOGGEDIN, 'true');
       this.router.navigate(['/home']);
       return Promise.resolve();
     } catch (error) {
       console.error('Error occurred during login:', error);
+      this.snackBarService.open('Error occurred during login. Try again later', 'error');
       return Promise.reject('Error occurred during login.');
     }
   }
