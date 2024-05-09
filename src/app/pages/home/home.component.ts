@@ -2,6 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { NgFor } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Group } from '../../../classes/group';
+import { environment } from '../../../environments/environment';
+import { GroupService } from '../../services/group.service';
+import { lastValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-home',
@@ -14,35 +18,30 @@ import { FormsModule } from '@angular/forms';
   styleUrls: ['./home.component.css']
 })
 export class HomeComponent implements OnInit {
-  public userGroups: any;
+  public userGroups: Array<Group> = [];
   public groupName: string = "";
-  private apiUrl = 'http://localhost:8000'; // URL de tu backend FastAPI
 
-  constructor(private http: HttpClient) { }
+  constructor(private groupService: GroupService) { }
 
-  ngOnInit(): void {
-    this.http.get(`${this.apiUrl}/user_groups`).subscribe(data => {
-      this.userGroups = data;
-      console.log("User groups: ", this.userGroups);
-    });
+  async ngOnInit(): Promise<void> {
+    this.userGroups = await lastValueFrom(this.groupService.getGroups()) as Array<Group>;
+    console.log("User groups: ", this.userGroups);
+
   }
 
-  createGroup(): void {
+  async createGroup(): Promise<void> {
     console.log("create group")
-    const groupData = {
-      name: this.groupName
-    };
 
-    this.http.post(`${this.apiUrl}/user_groups`, groupData).subscribe(response => {
-      console.log(response);
-      this.groupName = ''; // Clear the input field
+    const group = new Group();
+    group.name = this.groupName; 
+    const groupCreated = await lastValueFrom(this.groupService.postGroup(group)) as Group;
 
-      // Refresh the user groups
-      this.http.get(`${this.apiUrl}/user_groups`).subscribe(data => {
-        this.userGroups = data;
-        console.log("User groups: ", this.userGroups);
-      });
-    });
+    console.log("Group created: " + groupCreated);
+    this.groupName = ''; // Clear the input field
+
+    // Refresh the user groups
+    this.userGroups = await lastValueFrom(this.groupService.getGroups()) as Array<Group>;
+    console.log("User groups: ", this.userGroups);
   }
 
   editGroup(): void {

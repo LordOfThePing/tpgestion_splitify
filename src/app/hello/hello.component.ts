@@ -24,10 +24,15 @@ export class HelloComponent {
   */
   ngOnInit(): void {
     this.userService.getUsers().subscribe(
-      (data: Array<User>) => {
+      (data: Array<User> | null) => {
+        if (data) {
+          this.responseContent = data ;
+          console.log(data);
 
-        this.responseContent = data;
-        console.log(data);
+        } else {
+          console.error('No users found from server');
+
+        }
       },
       (error) => {
         console.error('Error al obtener datos del servidor:', error);

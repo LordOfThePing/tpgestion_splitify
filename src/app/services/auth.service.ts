@@ -1,7 +1,7 @@
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { catchError, tap } from 'rxjs';
+import { catchError, firstValueFrom, lastValueFrom, tap } from 'rxjs';
 import { UserService } from './user.service';
 import { User } from '../../classes/user';
 import { SnackbarService } from './snackbar.service';
@@ -18,27 +18,29 @@ export class AuthService {
 
   async login(username: string, password: string) {
     try {
-      const user: [User] = await this.userService.getUser(username).toPromise() as [User];
+      const user: User | null = await lastValueFrom(this.userService.getUser(username));
 
-      if (!user || !user[0]) {
+      if (!user) {
         console.error('User not found.');
         this.snackBarService.open('Wrong username/password.', 'error');
         return Promise.reject('User not found.');
       }
 
-      if (password !== user[0].password) {
+      if (password !== user.password) {
         console.error('Authentication error: Password entered does not match the one in the database.');
+        console.log('password: ' + password + ' vs DB pass: '+ user.password);
         this.snackBarService.open('Wrong username/password.', 'error');
         return Promise.reject('Authentication error: Password entered does not match the one in the database.');
       } 
 
+      this.snackBarService.open('Login success!', 'success');
       localStorage.setItem(LOGGEDIN, 'true');
       this.router.navigate(['/home']);
       return Promise.resolve();
     } catch (error) {
       console.error('Error occurred during login:', error);
       this.snackBarService.open('Error occurred during login. Try again later', 'error');
-      return Promise.reject('Error occurred during login.');
+      return Promise.reject('Error occurred during login:' + error);
     }
   }
 
@@ -70,10 +72,13 @@ export class AuthService {
       user.mail = email;
       user.celular = cellphone;
       user.username = username;
-      await this.userService.postUser(user).toPromise();
+      await lastValueFrom(this.userService.postUser(user));
+      this.snackBarService.open('Register success!', 'success');
       return Promise.resolve()
     } catch (error) {
-      Promise.reject(error)
+      this.snackBarService.open('Error occurred during register. Try again later', 'error');
+
+      Promise.reject("Error occurred during register: " + error)
     }
   }
 }

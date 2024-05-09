@@ -4,16 +4,17 @@ import { Observable, catchError, map, throwError } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { User } from '../../classes/user';
 import { ResponseModel } from '../../classes/responseModel';
+import { Group } from '../../classes/group';
 
 @Injectable({
   providedIn: 'root'
 })
-export class UserService {
+export class GroupService {
 
 constructor(private http: HttpClient) { }
 
-getUsers(): Observable<Array<User>|null> {
-  return this.http.get<ResponseModel<Array<User>>>(`${environment.apiUrl}/users`)
+getGroups(): Observable<Array<Group>|null> {
+  return this.http.get<ResponseModel<Array<Group>>>(`${environment.apiUrl}/groups`)
     .pipe(
       map(response => {
         if (response && response.message === "OK" && response.dataModel) {
@@ -25,13 +26,12 @@ getUsers(): Observable<Array<User>|null> {
         }
       }),
       catchError(error => {
-        return throwError(() => new Error('Failed to fetch users: ' + error.message));
+        return throwError(() => new Error('Failed to fetch groups: ' + error.message));
       })
     );
 }
-
-getUser(username: string): Observable<User|null> {
-  return this.http.get<ResponseModel<User>>(`${environment.apiUrl}/user/` + username)
+getGroup(groupname: string): Observable<Array<Group>|null> {
+  return this.http.get<ResponseModel<Array<Group>>>(`${environment.apiUrl}/groups?groupname=` + groupname )
     .pipe(
       map(response => {
         if (response && response.message === "OK" && response.dataModel) {
@@ -43,13 +43,31 @@ getUser(username: string): Observable<User|null> {
         }
       }),
       catchError(error => {
-        return throwError(() => new Error('Failed to fetch user: ' + error.message));
+        return throwError(() => new Error('Failed to fetch group: ' + error.message));
       })
     );
 }
 
-postUser(user: User): Observable<User|null> {
-  return this.http.post<ResponseModel<User>>(`${environment.apiUrl}/users`, user)
+getUsernameGroups(username: string): Observable<Group|null> {
+  return this.http.get<ResponseModel<Group>>(`${environment.apiUrl}/user_groups/` + username)
+    .pipe(
+      map(response => {
+        if (response && response.message === "OK" && response.dataModel) {
+          return response.dataModel;
+        } else if (response && response.message === "NOT FOUND") {
+          return null
+        } else {
+          throw new Error('Failed to deserialize response or invalid data received');
+        }
+      }),
+      catchError(error => {
+        return throwError(() => new Error('Failed to fetch username groups: ' + error.message));
+      })
+    );
+}
+
+postGroup(group: Group): Observable<Group|null> {
+  return this.http.post<ResponseModel<Group>>(`${environment.apiUrl}/groups`, group)
     .pipe(
       map(response => {
         if (response && response.message === "OK" && response.dataModel) {
@@ -61,13 +79,10 @@ postUser(user: User): Observable<User|null> {
         }
       }),
       catchError(error => {
-        return throwError(() => new Error('Failed to post user: ' + error.message));
+        return throwError(() => new Error('Failed to post group: ' + error.message));
       })
     );
 }
 
-getHelloMessage(): Observable<any> {
-  return this.http.get<any>(`${environment.apiUrl}/hello`);
-}
 
 }
