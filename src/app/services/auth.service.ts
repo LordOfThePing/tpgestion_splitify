@@ -7,13 +7,13 @@ import { User } from '../../classes/user';
 import { SnackbarService } from './snackbar.service';
 
 const LOGGEDIN = 'splitifyLoggedIn'
+const USERID = 'userId'
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
   totalAngularPackages: any;
-
   constructor(private router: Router, private http: HttpClient, private userService: UserService, private snackBarService: SnackbarService) { }
 
   async login(username: string, password: string) {
@@ -32,9 +32,9 @@ export class AuthService {
         this.snackBarService.open('Wrong username/password.', 'error');
         return Promise.reject('Authentication error: Password entered does not match the one in the database.');
       } 
-
       this.snackBarService.open('Login success!', 'success');
       localStorage.setItem(LOGGEDIN, 'true');
+      localStorage.setItem(USERID, String(user.id_user));
       this.router.navigate(['/home']);
       return Promise.resolve();
     } catch (error) {
@@ -54,6 +54,10 @@ export class AuthService {
     console.log('loggedIn?', loggedIn);
     if (!loggedIn) return false;
     return loggedIn == 'true' ? true : false;
+  }
+
+  loggedUserId(): number  {
+    return +(localStorage.getItem(USERID) as String);
   }
 
   async register(

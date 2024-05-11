@@ -7,19 +7,27 @@
             <th>Id</th>
             <th>Name</th>
             <th>Time Created</th>
+            <th>Role</th>
             <th>Actions</th>
         </tr>
     </thead>
     <tbody>
-        <tr *ngFor="let group of userGroups">
-            <td>{{ group.id_group }}</td>
-            <td>{{ group.name }}</td>
-            <td>{{ group.time_created }}</td>
-            <td>
-                <button class="btn btn-primary" (click)="editGroup()" hidden >Edit</button>
-                <button class="btn btn-danger" (click)="deleteGroup()" hidden >Delete</button>
-            </td>
-        </tr>
+        @for (group of userGroups; track $index) {
+            <tr>
+                <td>{{ group.id_group }}</td>
+                <td>{{ group.name }}</td>
+                <td>{{ group.time_created }}</td>
+                @if(userGroupsIsAdmin[$index]){
+                    <td>Admin</td>
+                } @else {
+                    <td>Member</td>
+                }
+                <td>
+                    <button class="btn btn-primary" (click)="editGroup()" hidden >Edit</button>
+                    <button class="btn btn-danger" (click)="deleteGroup()" hidden >Delete</button>
+                </td>
+            </tr>
+        }
     </tbody>
 </table>
 
