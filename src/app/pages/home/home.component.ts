@@ -7,6 +7,9 @@ import { lastValueFrom } from 'rxjs';
 import { AuthService } from '../../services/auth.service';
 import { GroupMemberService } from '../../services/groupMembers.service';
 import { GroupMember } from '../../../classes/groupMember';
+import { MatDialog } from '@angular/material/dialog';
+import { DialogComponent } from '../../components/dialog/dialog.component';
+import { SnackbarService } from '../../services/dialog.service';
 
 @Component({
   selector: 'app-home',
@@ -25,7 +28,13 @@ export class HomeComponent implements OnInit {
   public userGroupsIsAdmin: Array<boolean> = [];
   public groupName: string = "";
 
-  constructor(private groupService: GroupService, private authService: AuthService, private groupMemberService: GroupMemberService) { }
+  constructor(
+    private groupService: GroupService, 
+    private authService: AuthService, 
+    private groupMemberService: GroupMemberService, 
+    private snackBarService: SnackbarService, 
+    public dialog: MatDialog
+  ) { }
 
   async ngOnInit(): Promise<void> {
     this.refreshGroups();
@@ -41,6 +50,7 @@ export class HomeComponent implements OnInit {
     console.log("Group created: " + groupCreated);
     this.groupName = ''; // Clear the input field
     this.refreshGroups();
+    this.snackBarService.open('Group \"' + groupCreated.name + '\" created', 'success');
 
     console.log("User groups: ", this.userGroups);
   }
@@ -63,24 +73,37 @@ export class HomeComponent implements OnInit {
   async createGroupAndGroupMember() : Promise<Group> {
     const group = new Group();
     group.name = this.groupName; 
-    console.log("posting group: " + group);
     // Creo un nuevo grupo
     const groupCreated = await lastValueFrom(this.groupService.postGroup(group)) as Group;
     const groupMember = new GroupMember();
     groupMember.id_group = groupCreated.id_group; 
     groupMember.id_user = this.authService.loggedUserId(); 
     groupMember.is_admin = true;
-    console.log("posting group member id_group: " + groupMember.id_group);
-    console.log("posting group member id_user: " + groupMember.id_user);
-    console.log("posting group member is_admin: " + groupMember.is_admin);
+
     // Creo una nueva relacion groupMember para ese grupo
     const groupMemberCreated = await lastValueFrom(this.groupMemberService.postGroupMember(groupMember)) as GroupMember;
+  
     return groupCreated; 
     
   }
 
-  editGroup(): void {
-    console.log("edit group")
+  async editGroupName(index:number): Promise<void> {
+    const dialogRef = this.dialog.open(DialogComponent, {
+      width: '250px',
+      data: {title: "Edit Group name", content: "Insert the new group name"}
+    });
+    let newName = await lastValueFrom(dialogRef.afterClosed());
+    if (newName){
+      const group = new Group();
+      group.id_group = this.userGroups[index].id_group; 
+      group.members_count = this.userGroups[index].members_count; 
+      group.time_created = this.userGroups[index].time_created; 
+      group.name = newName; 
+      let updatedGroup = await lastValueFrom(this.groupService.putGroup(group)) as Group;
+      this.snackBarService.open('Group name updated', 'success');
+      this.refreshGroups();
+    }
+
   }
 
   deleteGroup(): void {

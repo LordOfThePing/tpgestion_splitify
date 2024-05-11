@@ -85,5 +85,24 @@ postGroup(group: Group): Observable<Group|null> {
     );
 }
 
+putGroup(group: Group): Observable<Group|null> {
+  console.log("group_id: " + group.id_group);
+  console.log("name: " + group.name);
+  return this.http.put<ResponseModel<Group>>(`${environment.apiUrl}/groups/` + group.id_group, group)
+    .pipe(
+      map(response => {
+        if (response && response.message === "OK" && response.dataModel) {
+          return response.dataModel;
+        } else if (response && response.message === "ERROR") {
+          return null
+        } else {
+          throw new Error('Failed to deserialize response or invalid data received');
+        }
+      }),
+      catchError(error => {
+        return throwError(() => new Error('Failed to put group: ' + error.message));
+      })
+    );
+}
 
 }
