@@ -28,7 +28,6 @@ export class GroupComponent implements OnInit {
   public userGroups: Array<Group> = [];
   public userGroupsIsAdmin: Array<boolean> = [];
   public group: Group = new Group();
-  public newCategoryName: string = "";
   private id_group: number = -1;
 
   constructor(
