@@ -4,5 +4,4 @@ export class Group {
     name: string = ""; 
     members_count: number = 0;
     time_created: string = "";
-  
   }

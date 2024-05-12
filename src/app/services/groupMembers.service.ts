@@ -12,8 +12,8 @@ export class GroupMemberService {
 
 constructor(private http: HttpClient) { }
 
-getGroupMembers(): Observable<Array<GroupMember>|null> {
-  return this.http.get<ResponseModel<Array<GroupMember>>>(`${environment.apiUrl}/groupMembers`)
+getGroupMembers(groupId: number): Observable<Array<GroupMember>|null> {
+  return this.http.get<ResponseModel<Array<GroupMember>>>(`${environment.apiUrl}/groupMembers?id_group=` + String(groupId))
     .pipe(
       map(response => {
         if (response && response.message === "OK" && response.dataModel) {

@@ -4,13 +4,11 @@ import { FormsModule } from '@angular/forms';
 import { Group } from '../../../classes/group';
 import { GroupService } from '../../services/group.service';
 import { lastValueFrom } from 'rxjs';
-import { AuthService } from '../../services/auth.service';
 import { GroupMemberService } from '../../services/groupMembers.service';
-import { GroupMember } from '../../../classes/groupMember';
 import { MatDialog } from '@angular/material/dialog';
-import { DialogComponent } from '../../components/dialog/dialog.component';
-import { SnackbarService } from '../../services/dialog.service';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
+import { User } from '../../../classes/user';
+import { UserService } from '../../services/user.service';
 
 @Component({
   selector: 'app-home',
@@ -27,14 +25,15 @@ import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 export class GroupComponent implements OnInit {
   public userGroups: Array<Group> = [];
   public userGroupsIsAdmin: Array<boolean> = [];
-  public group: Group = new Group();
   private id_group: number = -1;
+  public group: Group = new Group();
+  public membersData: User[] = [];
+  public members: Array<any> = [];
 
   constructor(
+    private userService: UserService,
     private groupService: GroupService, 
-    private authService: AuthService, 
     private groupMemberService: GroupMemberService, 
-    private snackBarService: SnackbarService, 
     private route: ActivatedRoute,
     private router: Router,
     public dialog: MatDialog
@@ -47,14 +46,33 @@ export class GroupComponent implements OnInit {
       console.log("group id: ", this.id_group);
     });
 
+    // Get group data
     try {
       const groupData = await lastValueFrom(this.groupService.getGroupById(this.id_group));
-      console.log("group data: ", groupData)
       this.group = groupData!;
     } catch (error) {
+      // TODO: handle error
       console.log("group not found");
       this.router.navigateByUrl('/home');
     }
+
+    // Get members data
+    try {
+      const members = await lastValueFrom(this.groupMemberService.getGroupMembers(this.id_group))
+      this.members = members!;
+      for (const member of this.members) {
+        const userDataArray: any = await lastValueFrom(this.userService.getUserById(member.id_user));
+        if (userDataArray) {
+          const userData = userDataArray[0]; // Extract the user from the array
+          this.membersData.push(userData!);
+        }
+      }
+    } catch (error) {
+      // TODO: handle error
+      console.log("members not found");
+      this.router.navigateByUrl('/home');
+    }
+
   }
 
   async createCategory(formData: any): Promise<void> {
