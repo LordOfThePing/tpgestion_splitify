@@ -53,13 +53,12 @@ export class GroupComponent implements OnInit {
       console.log("group data: ", groupData)
       this.groupName = groupData!.name;
     } catch (error) {
-      // TODO: redirect to home page
       console.log("group not found");
       this.router.navigateByUrl('/home');
     }
   }
 
   async createCategory(): Promise<void> {
-    console.log("create category")
+    console.log("create category: ", this.newCategoryName);
   }
 }
