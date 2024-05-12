@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { NgFor, NgIf } from '@angular/common';
+import { NgClass, NgFor, NgIf } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Group } from '../../../classes/group';
 import { GroupService } from '../../services/group.service';
@@ -14,6 +14,7 @@ import { UserService } from '../../services/user.service';
   selector: 'app-home',
   standalone: true,
   imports: [
+    NgClass,
     NgFor,
     FormsModule,
     NgIf
@@ -29,6 +30,7 @@ export class GroupComponent implements OnInit {
   public group: Group = new Group();
   public membersData: User[] = [];
   public members: Array<any> = [];
+  public categories: Array<any> = [];
 
   constructor(
     private userService: UserService,
@@ -70,6 +72,15 @@ export class GroupComponent implements OnInit {
     } catch (error) {
       // TODO: handle error
       console.log("members not found");
+      this.router.navigateByUrl('/home');
+    }
+
+    // Get categories data
+    try {
+
+    } catch (error) {
+      // TODO: handle error
+      console.log("categories not found");
       this.router.navigateByUrl('/home');
     }
 
