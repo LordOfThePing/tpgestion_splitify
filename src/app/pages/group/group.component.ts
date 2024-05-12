@@ -27,7 +27,7 @@ import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 export class GroupComponent implements OnInit {
   public userGroups: Array<Group> = [];
   public userGroupsIsAdmin: Array<boolean> = [];
-  public groupName: string = "";
+  public group: Group = new Group();
   public newCategoryName: string = "";
   private id_group: number = -1;
 
@@ -37,8 +37,8 @@ export class GroupComponent implements OnInit {
     private groupMemberService: GroupMemberService, 
     private snackBarService: SnackbarService, 
     private route: ActivatedRoute,
-    public dialog: MatDialog,
-    private router: Router
+    private router: Router,
+    public dialog: MatDialog
   ) { }
 
   async ngOnInit(): Promise<void> {
@@ -51,14 +51,33 @@ export class GroupComponent implements OnInit {
     try {
       const groupData = await lastValueFrom(this.groupService.getGroupById(this.id_group));
       console.log("group data: ", groupData)
-      this.groupName = groupData!.name;
+      this.group = groupData!;
     } catch (error) {
       console.log("group not found");
       this.router.navigateByUrl('/home');
     }
   }
 
-  async createCategory(): Promise<void> {
-    console.log("create category: ", this.newCategoryName);
+  async createCategory(formData: any): Promise<void> {
+    let total_percentage = 0;
+    
+    if (formData.newCategoryName === "") {
+      alert("El nombre de la categoría no puede estar vacío");
+      return;
+    }
+
+    for (const key in formData) {
+      if (key.startsWith("percentage")) {
+        total_percentage += Number(formData[key]);
+      }
+    }
+    if (total_percentage !== 100) {
+      alert("El porcentaje total debe ser 100%");
+      return;
+    }
+
+    console.log("total percentage: ", total_percentage);
+    console.log("create category: ", formData);
+    alert("TODO: create category");
   }
 }
