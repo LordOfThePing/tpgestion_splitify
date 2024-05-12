@@ -1,0 +1,19 @@
+<div>
+    <h1 class="display-1">{{ this.groupName }}</h1>
+
+    <h3>Miembros</h3>
+    <div class="list-group">
+    <a class="list-group-item list-group-item-action list-group-item-primary">Miembro 1 (Admin)</a>
+    <a class="list-group-item list-group-item-action">Miembro 2</a>
+    <a class="list-group-item list-group-item-action">Miembro 3</a>
+    <a class="list-group-item list-group-item-action">Miembro 4</a>
+    </div>
+
+    <h3>Categorias</h3>
+
+    <div class="input-group mb-3">
+    <input type="text" [(ngModel)]="newCategoryName" class="form-control" placeholder="Nombre categoría" aria-label="Nombre categoría" aria-describedby="basic-addon2">
+    <div class="input-group-append">
+        <button class="btn btn-success" (click)="createCategory()" type="button">Crear categoría</button>
+    </div>
+</div></div>
