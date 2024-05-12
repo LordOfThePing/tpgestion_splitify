@@ -10,7 +10,7 @@ import { GroupMember } from '../../../classes/groupMember';
 import { MatDialog } from '@angular/material/dialog';
 import { DialogComponent } from '../../components/dialog/dialog.component';
 import { SnackbarService } from '../../services/dialog.service';
-import { ActivatedRoute, ParamMap } from '@angular/router';
+import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 
 @Component({
   selector: 'app-home',
@@ -37,7 +37,8 @@ export class GroupComponent implements OnInit {
     private groupMemberService: GroupMemberService, 
     private snackBarService: SnackbarService, 
     private route: ActivatedRoute,
-    public dialog: MatDialog
+    public dialog: MatDialog,
+    private router: Router
   ) { }
 
   async ngOnInit(): Promise<void> {
@@ -54,6 +55,7 @@ export class GroupComponent implements OnInit {
     } catch (error) {
       // TODO: redirect to home page
       console.log("group not found");
+      this.router.navigateByUrl('/home');
     }
   }
 
