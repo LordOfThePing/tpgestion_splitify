@@ -6,7 +6,7 @@ import { GroupService } from '../../services/group.service';
 import { lastValueFrom } from 'rxjs';
 import { GroupMemberService } from '../../services/groupMembers.service';
 import { MatDialog } from '@angular/material/dialog';
-import { ActivatedRoute, ParamMap, Router } from '@angular/router';
+import { ActivatedRoute, ParamMap, Router, RouterLink } from '@angular/router';
 import { User } from '../../../classes/user';
 import { UserService } from '../../services/user.service';
 import { CategoryService } from '../../services/category.service';
@@ -25,8 +25,8 @@ import { AddUserDialogComponent } from '../../components/addUserDialog/adduserDi
     NgClass,
     NgFor,
     FormsModule,
-    NgIf
-
+    NgIf,
+    RouterLink,
   ],
   templateUrl: './group.component.html',
   styleUrls: ['./group.component.css']

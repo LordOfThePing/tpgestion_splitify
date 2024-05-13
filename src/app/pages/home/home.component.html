@@ -23,10 +23,11 @@
                     <td>Member</td>
                 }
                 <td>
+                    <button class="btn btn-primary" [routerLink]="'/group/' + group.id_group">Ver</button>
                     @if(userGroupsIsAdmin[$index]){
-                        <button class="btn btn-primary" (click)="editGroupName($index)" >Edit Name</button>
+                        <button class="btn btn-primary" (click)="editGroupName($index)" >Editar Nombre</button>
                     }
-                    <button class="btn btn-danger" (click)="deleteGroup()" hidden >Delete</button>
+                    <button class="btn btn-danger" (click)="deleteGroup()" hidden >Borrar</button>
                 </td>
             </tr>
         }

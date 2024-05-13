@@ -10,7 +10,7 @@
                     <a class="list-group-item list-group-item-action" [ngClass]="{'list-group-item-success': member.id_user === this.admin_id}">{{ member.username }}</a>
                 </td>
                 <td>
-                    @if(this.admin_id){
+                    @if(this.admin_id && member.id_user != this.admin_id){
                         <button class="btn btn-danger" (click)="deleteUser($index)" >Delete User</button>
                     }
                 </td>
@@ -62,7 +62,6 @@
                         </tr>
                     </tbody>
                 </table>
-                <!-- delete category button -->
                 <div class="d-grid gap-2 col-6 mx-auto">
                     <button type="button" class="btn btn-danger" (click)="deleteCategory(category)">Eliminar categoría</button>
                 </div>
