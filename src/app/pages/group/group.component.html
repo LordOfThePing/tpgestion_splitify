@@ -5,7 +5,7 @@
     <div class="list-group">
     @for (member of this.membersData; track $index) {
         <!-- TODO: agregar list-group-item-primary al admin -->
-        <a class="list-group-item list-group-item-action" [ngClass]="{'list-group-item-primary': member.id_user === 0}">{{ member.username }}</a>
+        <a class="list-group-item list-group-item-action" [ngClass]="{'list-group-item-success': member.id_user === this.admin_id}">{{ member.username }}</a>
     }
     </div>
 
@@ -30,11 +30,11 @@
         </form>
     </div>
 
-    <div class="mt-3">
+    <div class="m-3">
         <h3>Categorias</h3>
-        <!-- @for (category of this.categories; track $index) { -->
-            <div class="p-1 text-center">
-                <h4 class="bg-secondary-subtle rounded p-2">Cenas</h4>
+        @for (category of this.categories; track $index) {
+            <div class="p-2 text-center">
+                <h4 class="bg-secondary-subtle rounded p-2">{{ category.name }}</h4>
                 <table class="table table-striped">
                     <thead class="thead-dark">
                         <tr>
@@ -53,7 +53,11 @@
                         </tr>
                     </tbody>
                 </table>
+                <!-- delete category button -->
+                <div class="d-grid gap-2 col-6 mx-auto">
+                    <button type="button" class="btn btn-danger" (click)="deleteCategory(category)">Eliminar categoría</button>
+                </div>
             </div>
-        <!-- } -->
+        }
     </div>
 </div>

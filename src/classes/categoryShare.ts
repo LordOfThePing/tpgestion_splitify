@@ -4,5 +4,4 @@ export class CategoryShare {
     id_user : number = 0;
     category_name : String = "";
     share_percentage : number = 0;
-  
   }
