@@ -48,8 +48,8 @@ getUser(username: string): Observable<User|null> {
     );
 }
 
-getUserById(id: number): Observable<User|null> {
-  return this.http.get<ResponseModel<User>>(`${environment.apiUrl}/users?id_user` + id)
+getUserById(id: number): Observable<Array<User>|null> {
+  return this.http.get<ResponseModel<Array<User>>>(`${environment.apiUrl}/users?id_user=` + id)
     .pipe(
       map(response => {
         if (response && response.message === "OK" && response.dataModel) {

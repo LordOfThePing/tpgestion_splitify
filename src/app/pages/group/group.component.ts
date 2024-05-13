@@ -13,6 +13,10 @@ import { CategoryService } from '../../services/category.service';
 import { CategoryShareService } from '../../services/categoryShare.service';
 import { Category } from '../../../classes/category';
 import { CategoryShare } from '../../../classes/categoryShare';
+import { DialogComponent } from '../../components/dialog/dialog.component';
+import { GroupMember } from '../../../classes/groupMember';
+import { SnackbarService } from '../../services/snackbar.service';
+import { AddUserDialogComponent } from '../../components/addUserDialog/adduserDialog.component';
 
 @Component({
   selector: 'app-home',
@@ -34,7 +38,7 @@ export class GroupComponent implements OnInit {
   public admin_id: number = -1;
   public group: Group = new Group();
   public membersData: User[] = [];
-  public members: Array<any> = [];
+  public members: Array<GroupMember> = [];
   public categories: Array<any> = [];
 
   constructor(
@@ -42,7 +46,7 @@ export class GroupComponent implements OnInit {
     private groupService: GroupService, 
     private groupMemberService: GroupMemberService,
     private categoryService: CategoryService,
-    private categoryShareService: CategoryShareService,
+    private snackBarService: SnackbarService, 
     private route: ActivatedRoute,
     private router: Router,
     public dialog: MatDialog
@@ -61,16 +65,16 @@ export class GroupComponent implements OnInit {
   async getMembersData(): Promise<void> {
     // Get members data
     try {
-      const members = await lastValueFrom(this.groupMemberService.getGroupMembers(this.id_group))
+      const members = await lastValueFrom(this.groupMemberService.getGroupMembers(this.id_group)) as [GroupMember]
       this.members = members!;
+      this.membersData = new Array;
       for (const member of this.members) {
-        const userDataArray: any = await lastValueFrom(this.userService.getUserById(member.id_user));
+        const userDataArray: Array<User> = await lastValueFrom(this.userService.getUserById(member.id_user)) as Array<User>;
         if (userDataArray) {
           if (member.is_admin) {
             this.admin_id = member.id_user;
           }
-          const userData = userDataArray[0]; // Extract the user from the array
-          this.membersData.push(userData!);
+          this.membersData.push(userDataArray[0]);
         }
       }
     } catch (error) {
@@ -155,6 +159,44 @@ export class GroupComponent implements OnInit {
 
   async deleteCategory(category: Category): Promise<void> {
     await lastValueFrom(this.categoryService.deleteCategory(category));
+    await this.getCategoriesData();
+  }
+
+  async addUser() : Promise<void> {
+    let dialogRef = this.dialog.open(AddUserDialogComponent, {
+      width: '250px',
+      data: {title: "Add user to group", content: "Insert the username to add", showError: false, msgError:""}
+    });
+    let user_id = await lastValueFrom(dialogRef.afterClosed());
+
+    const newGroupMember = new GroupMember;
+    newGroupMember.id_user = +user_id; 
+    newGroupMember.id_group = this.id_group; 
+    for (const member of this.members) {
+      if (member.id_user == newGroupMember.id_user){
+          this.snackBarService.open('Username already in group', 'info');
+          return; 
+        }
+    }
+    const groupMember = await lastValueFrom(this.groupMemberService.postGroupMember(newGroupMember)) as GroupMember;
+    if (!groupMember) {
+      this.snackBarService.open('Could not add user to group', 'error');
+    } 
+    this.snackBarService.open('Added user to group', 'success');
+    await this.getGroupData();
+    await this.getMembersData();
+    await this.getCategoriesData();
+  }
+
+  async deleteUser(index:number): Promise<void> {
+
+    let groupMemberDeleteArray = await lastValueFrom(this.groupMemberService.getUserIdGroupIdGroupMembers(this.membersData[index].id_user, this.id_group)) as [GroupMember];
+    console.log(groupMemberDeleteArray[0]);
+    let groupMemberDelete = await lastValueFrom(this.groupMemberService.deleteGroupMember(groupMemberDeleteArray[0])) as GroupMember;
+    console.log(groupMemberDelete);
+    this.snackBarService.open('User deleted', 'success');
+    await this.getGroupData();
+    await this.getMembersData();
     await this.getCategoriesData();
   }
 }

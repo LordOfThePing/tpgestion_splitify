@@ -29,7 +29,7 @@ export class LayoutComponent{
   }
 
   navigateTo(route: string){
-    // todo
+    this.router.navigate(['/home']);
   }
 
 }

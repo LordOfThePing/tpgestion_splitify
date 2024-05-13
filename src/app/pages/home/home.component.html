@@ -14,9 +14,9 @@
     <tbody>
         @for (group of userGroups; track $index) {
             <tr>
-                <td>{{ group.id_group }}</td>
-                <td>{{ group.name }}</td>
-                <td>{{ group.time_created }}</td>
+                <td (click)="enterGroup($index)">{{ group.id_group }}</td>
+                <td (click)="enterGroup($index)">{{ group.name }}</td>
+                <td (click)="enterGroup($index)">{{ group.time_created }}</td>
                 @if(userGroupsIsAdmin[$index]){
                     <td>Admin</td>
                 } @else {

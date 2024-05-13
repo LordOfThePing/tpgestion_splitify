@@ -9,7 +9,8 @@ import { GroupMemberService } from '../../services/groupMembers.service';
 import { GroupMember } from '../../../classes/groupMember';
 import { MatDialog } from '@angular/material/dialog';
 import { DialogComponent } from '../../components/dialog/dialog.component';
-import { SnackbarService } from '../../services/dialog.service';
+import { SnackbarService } from '../../services/snackbar.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-home',
@@ -33,7 +34,8 @@ export class HomeComponent implements OnInit {
     private authService: AuthService, 
     private groupMemberService: GroupMemberService, 
     private snackBarService: SnackbarService, 
-    public dialog: MatDialog
+    public dialog: MatDialog, 
+    private router: Router
   ) { }
 
   async ngOnInit(): Promise<void> {
@@ -103,6 +105,13 @@ export class HomeComponent implements OnInit {
       this.snackBarService.open('Group name updated', 'success');
       this.refreshGroups();
     }
+
+  }
+  async enterGroup(index:number): Promise<void> {
+    if (this.authService.isAuth()) {
+      this.router.navigate(['/group/' + this.userGroups[index].id_group]);
+    }
+
 
   }
 

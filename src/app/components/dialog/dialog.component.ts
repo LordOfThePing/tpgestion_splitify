@@ -9,6 +9,8 @@ export interface DialogData {
   title: string;
   content: string;
   value: string;
+  showError: boolean;
+  msgError: string;  
 }
 @Component({
   selector: 'dialog.component',
@@ -16,16 +18,14 @@ export interface DialogData {
   standalone: true,
   imports: [MatDialogModule, FormsModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatIconModule]
 })
-
 export class DialogComponent {
-
+  
   constructor(
     public dialogRef: MatDialogRef<DialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData) {}
-
-  onNoClick(): void {
-    this.data.value = ""; 
-    this.dialogRef.close();
-  }
-
+    
+    onNoClick(): void {
+      this.data.value = ""; 
+      this.dialogRef.close();
+    }
 }
