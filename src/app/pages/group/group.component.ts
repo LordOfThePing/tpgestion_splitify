@@ -10,13 +10,12 @@ import { ActivatedRoute, ParamMap, Router, RouterLink } from '@angular/router';
 import { User } from '../../../classes/user';
 import { UserService } from '../../services/user.service';
 import { CategoryService } from '../../services/category.service';
-import { CategoryShareService } from '../../services/categoryShare.service';
 import { Category } from '../../../classes/category';
 import { CategoryShare } from '../../../classes/categoryShare';
-import { DialogComponent } from '../../components/dialog/dialog.component';
 import { GroupMember } from '../../../classes/groupMember';
 import { SnackbarService } from '../../services/snackbar.service';
 import { AddUserDialogComponent } from '../../components/addUserDialog/adduserDialog.component';
+import { CategoryShareService } from '../../services/categoryShare.service';
 
 @Component({
   selector: 'app-home',
@@ -39,13 +38,15 @@ export class GroupComponent implements OnInit {
   public group: Group = new Group();
   public membersData: User[] = [];
   public members: Array<GroupMember> = [];
-  public categories: Array<any> = [];
+  public categories: Array<Category> = [];
+  public categoryShares: Array<CategoryShare> = [];
 
   constructor(
     private userService: UserService,
     private groupService: GroupService, 
     private groupMemberService: GroupMemberService,
     private categoryService: CategoryService,
+    private categoryShareService: CategoryShareService,
     private snackBarService: SnackbarService, 
     private route: ActivatedRoute,
     private router: Router,
@@ -84,15 +85,17 @@ export class GroupComponent implements OnInit {
   }
 
   async getCategoriesData(): Promise<void> {
-      // Get categories data
-      try {
-        const categories = await lastValueFrom(this.categoryService.getGroupCategories(this.id_group));
-        this.categories = categories!;
-      } catch (error) {
-        // TODO: handle error
-        alert("categories not found");
-      }
+    // Get categories data
+    try {
+      const categoryShares = await lastValueFrom(this.categoryShareService.getGroupCategoryShares(this.id_group));
+      this.categoryShares = categoryShares!;
+      const categories = await lastValueFrom(this.categoryService.getGroupCategories(this.id_group));
+      this.categories = categories!;
+    } catch (error) {
+      // TODO: handle error
+      alert("getCategories error: " + error);
     }
+  }
 
   async ngOnInit(): Promise<void> {
     this.route.paramMap.subscribe((params: ParamMap) => {
@@ -112,49 +115,59 @@ export class GroupComponent implements OnInit {
   // No es atomico!
   // TODO: CHEQUEAR QUE LOS NOMBRES DE LAS CATEGORIAS NO SE REPITAN
   async createCategory(formData: any): Promise<void> {
-    let total_percentage = 0;
-    
-    // Obtengo datos para las categoryShares
-    const newCategoryName = formData.newCategoryName;
-    if (newCategoryName === "") {
-      alert("El nombre de la categoría no puede estar vacío");
-      return;
-    }
-    
-    let newCategoryShares: CategoryShare[] = [];
-    for (const key in formData) {
-      if (!key.startsWith("percentage")) {
-        continue;
-      }
-      const id_user = Number(key.replace("percentage", ""));
+    try {
+      let total_percentage = 0;
       
-      let categoryShare = new CategoryShare();
-      categoryShare.id_cs = 0; // para que se usa este campo?
-      categoryShare.id_group = this.id_group;
-      categoryShare.id_user = id_user;
-      categoryShare.category_name = newCategoryName;
-      categoryShare.share_percentage = Number(formData[key]);
-      total_percentage += categoryShare.share_percentage;
-      newCategoryShares.push(categoryShare);
-    }
+      // Obtengo datos para las categoryShares
+      const newCategoryName = formData.newCategoryName;
+      if (newCategoryName === "") {
+        alert("El nombre de la categoría no puede estar vacío");
+        return;
+      }
+      
+      let newCategoryShares: Array<CategoryShare> = new Array<CategoryShare>;
+      for (const key in formData) {
+        if (!key.startsWith("percentage")) {
+          continue;
+        }
+        const id_user = Number(key.replace("percentage", ""));
+        
+        let categoryShare = new CategoryShare();
+        categoryShare.id_cs = 0; // se setea pero no se usa. Se genera uno nuevo en la base de datos. 
+        categoryShare.id_group = this.id_group;
+        categoryShare.id_user = id_user;
+        categoryShare.category_name = newCategoryName;
+        categoryShare.share_percentage = Number(formData[key]);
+        total_percentage += categoryShare.share_percentage;
+        newCategoryShares.push(categoryShare as CategoryShare);
+      }
 
-    if (total_percentage !== 100) {
-      alert("El porcentaje total debe ser 100%");
-      return;
-    }
+      if (total_percentage !== 100) {
+        alert("El porcentaje total debe ser 100%");
+        return;
+      }
 
-    // Creo la Category
-    const newCategory = new Category();
-    newCategory.name = newCategoryName;
-    newCategory.description = "";
-    newCategory.id_group = this.id_group;
-    await lastValueFrom(this.categoryService.createCategory(newCategory)) as Category;
+      // Creo la Category
+      const newCategory = new Category();
+      newCategory.name = newCategoryName;
+      newCategory.description = "Por ahora no tenemos input de descripcion.";
+      newCategory.id_group = this.id_group;
+      await lastValueFrom(this.categoryService.createCategory(newCategory)) as Category;
+      console.log(newCategoryShares); 
+      // Creo los CategoryShares
+      while (newCategoryShares.length > 0) {
+        let cs = newCategoryShares.pop(); 
+        await lastValueFrom(this.categoryShareService.createCategoryShare(cs as CategoryShare)) as CategoryShare;
+      }
 
-    // Creo los CategoryShares
-    // TODO
-
-    // Refresco la lista de categorias
-    await this.getCategoriesData();
+      // Refresco la lista de categorias
+      await this.getGroupData();
+      await this.getMembersData();
+      await this.getCategoriesData();
+      } catch (error) {
+        // TODO: handle error
+        alert("category add error: " + error);
+      }
   }
 
   async deleteCategory(category: Category): Promise<void> {
@@ -183,6 +196,7 @@ export class GroupComponent implements OnInit {
       this.snackBarService.open('Could not add user to group', 'error');
     } 
     this.snackBarService.open('Added user to group', 'success');
+
     await this.getGroupData();
     await this.getMembersData();
     await this.getCategoriesData();

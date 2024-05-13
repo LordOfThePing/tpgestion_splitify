@@ -26,12 +26,66 @@ export class CategoryShareService {
                 }
             }),
             catchError(error => {
-                return throwError(() => new Error('Failed to fetch groups: ' + error.message));
+                return throwError(() => new Error('Failed to fetch Category Shares: ' + error.message));
             })
         );
     }
 
     addGroupCategoryShare(groupId: number, categoryShares: Array<CategoryShare>): any {
         return 1;
+    }
+
+    createCategoryShare(category: CategoryShare): Observable<CategoryShare|null> {
+        return this.http.post<ResponseModel<CategoryShare>>(`${environment.apiUrl}/categoryShares`, category)
+            .pipe(
+                map(response => {
+                    if (response && response.message === "OK" && response.dataModel) {
+                        return response.dataModel;
+                    } else if (response && response.message === "ERROR") {
+                        return null
+                    } else {
+                        throw new Error('Failed to deserialize response or invalid data received');
+                    }
+                }),
+                catchError(error => {
+                    return throwError(() => new Error('Failed to post category share: ' + error.message));
+                })
+            );
+    }
+
+    deleteCategory(category: CategoryShare): Observable<CategoryShare|null> {
+        return this.http.post<ResponseModel<CategoryShare>>(`${environment.apiUrl}/deleteCategoryShares`, category)
+            .pipe(
+                map(response => {
+                    if (response && response.message === "OK" && response.dataModel) {
+                        return response.dataModel;
+                    } else if (response && response.message === "ERROR") {
+                        return null
+                    } else {
+                        throw new Error('Failed to deserialize response or invalid data received');
+                    }
+                }),
+                catchError(error => {
+                    return throwError(() => new Error('Failed to delete category share: ' + error.message));
+                })
+            );
+    }
+
+    getCategoryShares(): Observable<Array<CategoryShare>|null> {
+        return this.http.get<ResponseModel<Array<CategoryShare>>>(`${environment.apiUrl}/categoryShares`)
+            .pipe(
+                map(response => {
+                    if (response && response.message === "OK" && response.dataModel) {
+                        return response.dataModel;
+                    } else if (response && response.message === "NOT FOUND") {
+                        return null
+                    } else {
+                        throw new Error('Failed to deserialize response or invalid data received');
+                    }
+                }),
+                catchError(error => {
+                    return throwError(() => new Error('Failed to fetch category shares: ' + error.message));
+                })
+            );
     }
 }
