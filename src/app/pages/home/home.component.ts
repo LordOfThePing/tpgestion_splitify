@@ -10,6 +10,7 @@ import { GroupMember } from '../../../classes/groupMember';
 import { MatDialog } from '@angular/material/dialog';
 import { DialogComponent } from '../../components/dialog/dialog.component';
 import { SnackbarService } from '../../services/dialog.service';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-home',
@@ -17,8 +18,8 @@ import { SnackbarService } from '../../services/dialog.service';
   imports: [
     NgFor,
     FormsModule,
-    NgIf
-
+    NgIf,
+    RouterLink
   ],
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css']

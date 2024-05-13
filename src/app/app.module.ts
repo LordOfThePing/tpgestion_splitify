@@ -12,7 +12,8 @@ import { HelloComponent } from './hello/hello.component';
     BrowserModule,
     CommonModule, // Agrega CommonModule a la lista de imports
     HttpClientModule,
-    RouterModule.forRoot(routes) // Agrega RouterModule y pasa las rutas definidas a forRoot
+    RouterModule // Agrega RouterModule y pasa las rutas definidas a forRoot
+    
   ],
   providers: [],
   bootstrap: []
