@@ -19,13 +19,16 @@ export class CategoryService {
                 if (response && response.message === "OK" && response.dataModel) {
                     return response.dataModel;
                 } else if (response && response.message === "ERROR") {
+                    if (response.code == 2){
+                        throw new Error(response.detail);
+                    }
                     return null
                 } else {
                     throw new Error('Failed to deserialize response or invalid data received');
                 }
             }),
             catchError(error => {
-                return throwError(() => new Error('Failed to post group: ' + error.message));
+                return throwError(() => new Error(error.message));
             })
         );
     }

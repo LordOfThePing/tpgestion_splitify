@@ -80,7 +80,7 @@ export class GroupComponent implements OnInit {
       }
     } catch (error) {
       // TODO: handle error
-      alert("members not found");
+      this.snackBarService.open('Username already in group', 'info');
     }
   }
 
@@ -93,7 +93,7 @@ export class GroupComponent implements OnInit {
       this.categories = categories!;
     } catch (error) {
       // TODO: handle error
-      alert("getCategories error: " + error);
+      this.snackBarService.open("getCategories error: " + error, 'info');
     }
   }
 
@@ -113,7 +113,6 @@ export class GroupComponent implements OnInit {
   // Tiene que pegarle al backend para crear una Category
   // Y despues multiples veces para crear los CategoryShares de esa Category
   // No es atomico!
-  // TODO: CHEQUEAR QUE LOS NOMBRES DE LAS CATEGORIAS NO SE REPITAN
   async createCategory(formData: any): Promise<void> {
     try {
       let total_percentage = 0;
@@ -121,7 +120,7 @@ export class GroupComponent implements OnInit {
       // Obtengo datos para las categoryShares
       const newCategoryName = formData.newCategoryName;
       if (newCategoryName === "") {
-        alert("El nombre de la categoría no puede estar vacío");
+        this.snackBarService.open("El nombre de la categoría no puede estar vacío", 'info');
         return;
       }
       
@@ -143,7 +142,7 @@ export class GroupComponent implements OnInit {
       }
 
       if (total_percentage !== 100) {
-        alert("El porcentaje total debe ser 100%");
+        this.snackBarService.open("El porcentaje total debe ser 100%", 'info');
         return;
       }
 
@@ -165,8 +164,7 @@ export class GroupComponent implements OnInit {
       await this.getMembersData();
       await this.getCategoriesData();
       } catch (error) {
-        // TODO: handle error
-        alert("category add error: " + error);
+        this.snackBarService.open('' + error, 'info');
       }
   }
 
