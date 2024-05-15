@@ -75,10 +75,12 @@ export class CategoryShareService {
         return this.http.get<ResponseModel<Array<CategoryShare>>>(`${environment.apiUrl}/categoryShares`)
             .pipe(
                 map(response => {
-                    if (response && response.message === "OK" && response.dataModel) {
+                    if (response && response.code === 0 && response.message === "OK" && response.dataModel) {
                         return response.dataModel;
-                    } else if (response && response.message === "NOT FOUND") {
+                    } else if (response && response.code === 0 && response.message === "NOT FOUND") {
                         return null
+                    } else if (response && response.code === 1 && response.message === "ERROR") {
+                        throw new Error(response.detail);
                     } else {
                         throw new Error('Failed to deserialize response or invalid data received');
                     }

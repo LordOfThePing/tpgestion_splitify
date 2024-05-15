@@ -8,9 +8,12 @@ import { AuthService } from '../../services/auth.service';
 import { GroupMemberService } from '../../services/groupMembers.service';
 import { GroupMember } from '../../../classes/groupMember';
 import { MatDialog } from '@angular/material/dialog';
-import { DialogComponent } from '../../components/dialog/dialog.component';
 import { SnackbarService } from '../../services/snackbar.service';
 import { Router, RouterLink } from '@angular/router';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { ChangeGroupNameDialogComponent } from '../../components/changeGroupNameDialog/changeGroupNameDialog.component';
+import { NewGroupDialogComponent } from '../../components/newGroupDialog/newGroupDialog.component';
 
 @Component({
   selector: 'app-home',
@@ -19,7 +22,9 @@ import { Router, RouterLink } from '@angular/router';
     NgFor,
     FormsModule,
     NgIf,
-    RouterLink
+    RouterLink, 
+    MatInputModule, 
+    MatFormFieldModule
   ],
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css']
@@ -45,18 +50,6 @@ export class HomeComponent implements OnInit {
 
   }
 
-  async createGroup(): Promise<void> {
-    console.log("create group")
-
-    const groupCreated = await this.createGroupAndGroupMember(); 
-    console.log("Group created: " + groupCreated);
-    this.groupName = ''; // Clear the input field
-    this.refreshGroups();
-    this.snackBarService.open('Group \"' + groupCreated.name + '\" created', 'success');
-
-    console.log("User groups: ", this.userGroups);
-  }
-
   async refreshGroups() {
     this.userGroups = [];
 
@@ -72,40 +65,35 @@ export class HomeComponent implements OnInit {
     }
   }
 
-  async createGroupAndGroupMember() : Promise<Group> {
-    const group = new Group();
-    group.name = this.groupName; 
-    // Creo un nuevo grupo
-    const groupCreated = await lastValueFrom(this.groupService.postGroup(group)) as Group;
-    const groupMember = new GroupMember();
-    groupMember.id_group = groupCreated.id_group; 
-    groupMember.id_user = this.authService.loggedUserId(); 
-    groupMember.is_admin = true;
+  async createGroup() {
+    console.log("create group")
 
-    // Creo una nueva relacion groupMember para ese grupo
-    const groupMemberCreated = await lastValueFrom(this.groupMemberService.postGroupMember(groupMember)) as GroupMember;
-  
-    return groupCreated; 
-    
+    const dialogRef = this.dialog.open(NewGroupDialogComponent, {
+      width: '250px',
+      data: {title: "New Group", content: "Insert the new group name", id_user_logged: this.authService.loggedUserId()}
+    });
+    const groupCreatedName = await lastValueFrom(dialogRef.afterClosed());
+    if (groupCreatedName){
+      this.snackBarService.open('Group \"' + groupCreatedName + '\" created', 'success');
+    }
+    await this.refreshGroups();
   }
 
-  async editGroupName(index:number): Promise<void> {
-    const dialogRef = this.dialog.open(DialogComponent, {
-      width: '250px',
-      data: {title: "Edit Group name", content: "Insert the new group name"}
-    });
-    let newName = await lastValueFrom(dialogRef.afterClosed());
-    if (newName){
-      const group = new Group();
-      group.id_group = this.userGroups[index].id_group; 
-      group.members_count = this.userGroups[index].members_count; 
-      group.time_created = this.userGroups[index].time_created; 
-      group.name = newName; 
-      let updatedGroup = await lastValueFrom(this.groupService.putGroup(group)) as Group;
-      this.snackBarService.open('Group name updated', 'success');
-      this.refreshGroups();
-    }
 
+  async editGroupName(index:number): Promise<void> {
+    const group = new Group(); 
+    group.id_group = this.userGroups[index].id_group; 
+    group.members_count = this.userGroups[index].members_count; 
+    group.time_created = this.userGroups[index].time_created; 
+    const dialogRef = this.dialog.open(ChangeGroupNameDialogComponent, {
+      width: '250px',
+      data: {title: "Edit Group name", content: "Insert the new group name", groupToEdit: group}
+    });
+    const groupEditedName = await lastValueFrom(dialogRef.afterClosed());
+    if (groupEditedName){
+      this.snackBarService.open('Group name updated', 'success');
+    }
+    this.refreshGroups()
   }
   async enterGroup(index:number): Promise<void> {
     if (this.authService.isAuth()) {
