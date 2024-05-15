@@ -80,6 +80,21 @@ export class HomeComponent implements OnInit {
     await this.refreshGroups();
   }
 
+  async editGroupName(index:number): Promise<void> {
+    const group = new Group(); 
+    group.id_group = this.userGroups[index].id_group; 
+    group.members_count = this.userGroups[index].members_count; 
+    group.time_created = this.userGroups[index].time_created; 
+    const dialogRef = this.dialog.open(ChangeGroupNameDialogComponent, {
+      width: '250px',
+      data: {title: "Edit Group name", content: "Insert the new group name", groupToEdit: group}
+    });
+    const groupEditedName = await lastValueFrom(dialogRef.afterClosed());
+    if (groupEditedName){
+      this.snackBarService.open('Group name updated', 'success');
+    }
+    this.refreshGroups()
+  }
   async enterGroup(index:number): Promise<void> {
     if (this.authService.isAuth()) {
       this.router.navigate(['/group/' + this.userGroups[index].id_group]);
