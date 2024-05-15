@@ -49,14 +49,12 @@ export class HomeComponent implements OnInit {
     console.log("User groups: ", this.userGroups);
 
   }
-
-
   async refreshGroups() {
     this.userGroups = [];
-
+    console.log(this.authService.loggedUserId());
     // Obtengo todos los group_id a los que pertenece el user_id logueado 
     let userGroupMembers = await lastValueFrom(this.groupMemberService.getUserIdGroupMembers(this.authService.loggedUserId())) as Array<GroupMember>;
-    if (!userGroupMembers){
+    if (userGroupMembers.length < 1){
       return;
     }
     // busco los groups de los group_id encontrados

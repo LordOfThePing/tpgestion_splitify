@@ -1,42 +1,72 @@
-<div class="m-2">
+<div class="container">
+    
     <h1 class="display-1">{{ this.group.name }}</h1>
+    <div class="container"
+        fxLayout
+        fxLayoutAlign="center"
+    >
+        
+        <div class="item item-1" fxFlex="30%" 
 
-    <h3>Miembros   <button class="btn btn-primary mt-4" type="button" (click)="addUser()">Agregar usuario</button></h3>
-    <table class="table table-striped table-hover">
-        @for (member of this.membersData; track $index) {
-            <!-- TODO: agregar list-group-item-primary al admin -->
-            <tr>
-                <td>
-                    <a class="list-group-item list-group-item-action" [ngClass]="{'list-group-item-success': member.id_user === this.admin_id}">{{ member.username }}</a>
-                </td>
-                <td>
-                    @if(this.admin_id && member.id_user != this.admin_id){
-                        <button class="btn btn-danger" (click)="deleteUser($index)" >Delete User</button>
-                    }
-                </td>
-            </tr>
-        }
-    </table>
+        >   
+            <h3 class="m-2">Miembros</h3>
+            @if (this.isAdmin){<button class="btn btn-primary mt-4" type="button" (click)="addUser()">Agregar usuario</button>}
+            <table class="table table-striped table-hover">
+                @for (admin of this.admins; track $index) {
+                    <!-- TODO: agregar list-group-item-primary al admin -->
+                    <tr>
+                        <td>
+                            <a class="list-group-item list-group-item-action" [ngClass]="{'list-group-item-success': true}">{{ admin.username }}</a>
+                        </td>
+                        <td>
+                            @if (this.loggedUserId != admin.id_user && this.isAdmin){
 
-    <div class="mt-3 p-3 bg-primary-subtle text-primary-emphasis rounded">
-        <form #categoryForm="ngForm" (ngSubmit)="createCategory(categoryForm.value)">
-            <h4 class="m-8">Nueva Categoría</h4>
-            <div class="m-4">
-                <input type="text" class="form-control" id="newCategoryName" name="newCategoryName" placeholder="Nombre" ngModel>
-                @for (member of this.membersData; track $index) {
-                    <div class="row mt-2">
-                        <div class="col-sm-4 col-form-label text-center">
-                            <h5>{{ member.username }}</h5>
-                        </div>
-                        <div class="col-sm-8">
-                            <input type="numeric" min="0" max="100" class="form-control" [name]="'percentage' + $index" placeholder="porcentaje" ngModel>
-                            <!-- <input type="numeric" min="0" max="100" class="form-control" [name]="'percentage' + member.id" placeholder="porcentaje" ngModel> -->
-                        </div>
-                    </div>
+                                <button class="btn btn-danger" (click)="deleteUser($index)" >Delete User</button>
+                            }
+                        </td>
+                    </tr>
                 }
-                <button class="btn btn-primary mt-4" type="submit">Crear categoría</button>
+                @for (member of this.members; track $index) {
+                    <!-- TODO: agregar list-group-item-primary al admin -->
+                    <tr>
+                        <td>
+                            <a class="list-group-item list-group-item-action" [ngClass]="{'list-group-item-primary': true}">{{ member.username }}</a>
+                        </td>
+                        <td>
+                            @if (this.isAdmin){
+                                <button class="btn btn-danger" (click)="deleteUser($index)" >Delete User</button>
+                            }
+                        </td>
+                    </tr>
+                }
+            </table>
+        </div>
+        <div class="item item-2" fxFlex
+
+        > 
+            
+            <div class="m-3 p-3 bg-primary-subtle text-primary-emphasis rounded">
+                <form #categoryForm="ngForm" (ngSubmit)="createCategory(categoryForm.value)">
+                    <h4 class="m-8">Nueva Categoría</h4>
+                    <div class="m-4">
+                        <input type="text" class="form-control" id="newCategoryName" name="newCategoryName" placeholder="Nombre" ngModel>
+                        @for (member of this.totalmembers; track $index) {
+                            <div class="row mt-2">
+                                <div class="col-sm-4 col-form-label text-center">
+                                    <h5>{{ member.username }}</h5>
+                                </div>
+                                <div class="col-sm-8">
+                                    <input type="numeric" min="0" max="100" class="form-control" [name]="'percentage' + $index" placeholder="porcentaje" ngModel>
+                                    <!-- <input type="numeric" min="0" max="100" class="form-control" [name]="'percentage' + member.id" placeholder="porcentaje" ngModel> -->
+                                </div>
+                            </div>
+                        }
+                        <button class="btn btn-primary mt-4" type="submit">Crear categoría</button>
+                    </div>
+                </form>
             </div>
-        </form>
+            
+        </div> 
     </div>
 
     <div class="m-3">

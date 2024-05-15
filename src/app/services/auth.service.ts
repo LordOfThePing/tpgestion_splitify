@@ -18,14 +18,14 @@ export class AuthService {
 
   async login(username: string, password: string) {
     try {
-      const user: User | null = await lastValueFrom(this.userService.getUser(username));
-
-      if (!user) {
+      const users: User[] | null = await lastValueFrom(this.userService.getUserByUsername(username));
+      console.log(users)
+      if (!users || users.length < 1) {
         console.error('User not found.');
         this.snackBarService.open('Wrong username/password.', 'error');
         return Promise.reject('User not found.');
       }
-
+      let user = users[0]; 
       if (password !== user.password) {
         console.error('Authentication error: Password entered does not match the one in the database.');
         console.log('password: ' + password + ' vs DB pass: '+ user.password);

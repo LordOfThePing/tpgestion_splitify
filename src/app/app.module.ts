@@ -3,15 +3,15 @@ import { BrowserModule } from '@angular/platform-browser';
 import { HttpClientModule } from '@angular/common/http';
 import { RouterModule } from '@angular/router'; // Importa RouterModule
 import { CommonModule } from '@angular/common'; // Importa CommonModule
-import { routes } from './app.routes'; // Importa las rutas definidas
+import { FlexLayoutModule } from "@angular/flex-layout";
 
-import { HelloComponent } from './hello/hello.component';
 
 @NgModule({
   imports: [
     BrowserModule,
     CommonModule, // Agrega CommonModule a la lista de imports
     HttpClientModule,
+    FlexLayoutModule,
     RouterModule // Agrega RouterModule y pasa las rutas definidas a forRoot
     
   ],

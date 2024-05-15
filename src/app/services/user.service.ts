@@ -30,8 +30,8 @@ getUsers(): Observable<Array<User>|null> {
     );
 }
 
-getUser(username: string): Observable<User|null> {
-  return this.http.get<ResponseModel<User>>(`${environment.apiUrl}/user/` + username)
+getUserByUsername(username: string): Observable<User[]|null> {
+  return this.http.get<ResponseModel<User[]>>(`${environment.apiUrl}/users?username=` + username)
     .pipe(
       map(response => {
         if (response && response.message === "OK" && response.dataModel) {
@@ -48,13 +48,13 @@ getUser(username: string): Observable<User|null> {
     );
 }
 
-getUserById(id: number): Observable<Array<User>|null> {
-  return this.http.get<ResponseModel<Array<User>>>(`${environment.apiUrl}/users?id_user=` + id)
+getUser(id: number): Observable<User|null> {
+  return this.http.get<ResponseModel<User>>(`${environment.apiUrl}/user/` + id)
     .pipe(
       map(response => {
         if (response && response.message === "OK" && response.dataModel) {
           return response.dataModel;
-        } else if (response && response.message === "NOT FOUND") {
+        } else if (response && response.message === "ERROR") {
           return null
         } else {
           throw new Error('Failed to deserialize response or invalid data received');

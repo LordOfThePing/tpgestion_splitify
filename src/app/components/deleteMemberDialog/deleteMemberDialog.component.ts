@@ -8,49 +8,32 @@ import { FormsModule } from '@angular/forms';
 import { UserService } from '../../services/user.service';
 import { User } from '../../../classes/user';
 import { lastValueFrom } from 'rxjs';
-export interface AddUserDialogData {
+export interface DeleteMemberDialogData {
   title: string;
   content: string;
   value: string;
   showError: boolean;
   msgError: string;  
-  userIdRequestor: number;
 }
 @Component({
-  selector: 'addUserDialog.component',
-  templateUrl: 'addUserDialog.component.html',
+  selector: 'deleteMemberDialog.component',
+  templateUrl: 'deleteMemberDialog.component.html',
   standalone: true,
   imports: [MatDialogModule, FormsModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatIconModule]
 })
-export class AddUserDialogComponent {
+export class DeleteMemberDialogComponent {
   
   constructor(
     private userService: UserService,
-    public dialogRef: MatDialogRef<AddUserDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: AddUserDialogData) {}
+    public dialogRef: MatDialogRef<DeleteMemberDialogComponent>,
+    @Inject(MAT_DIALOG_DATA) public data: DeleteMemberDialogData) {}
     
     onNoClick(): void {
       this.data.value = ""; 
       this.dialogRef.close();
     }
     async onClick(): Promise<void> {
-      if (!this.data.value){
-        this.data.showError = true;
-        this.data.msgError = "Must insert an username";
-        return; 
-      }
-      let usersFound = await lastValueFrom(this.userService.getUserByUsername(this.data.value)) as User[];
-      if (!usersFound || usersFound.length < 1) {
-        this.data.showError = true;
-        this.data.msgError = "Username not found";
-        return; 
-      }
-      if (usersFound[0].id_user == this.data.userIdRequestor) {
-        this.data.showError = true;
-        this.data.msgError = "Cannot add yourself to the group";
-        return; 
-      }
 
-      this.dialogRef.close(""+usersFound[0].id_user);
+      this.dialogRef.close("deleted");
     }
 }

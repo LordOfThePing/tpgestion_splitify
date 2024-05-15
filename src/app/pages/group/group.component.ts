@@ -16,6 +16,9 @@ import { GroupMember } from '../../../classes/groupMember';
 import { SnackbarService } from '../../services/snackbar.service';
 import { AddUserDialogComponent } from '../../components/addUserDialog/adduserDialog.component';
 import { CategoryShareService } from '../../services/categoryShare.service';
+import { AuthService } from '../../services/auth.service';
+import { DeleteMemberDialogComponent } from '../../components/deleteMemberDialog/deleteMemberDialog.component';
+import { FlexLayoutModule } from '@angular/flex-layout';
 
 @Component({
   selector: 'app-home',
@@ -26,6 +29,7 @@ import { CategoryShareService } from '../../services/categoryShare.service';
     FormsModule,
     NgIf,
     RouterLink,
+    FlexLayoutModule
   ],
   templateUrl: './group.component.html',
   styleUrls: ['./group.component.css']
@@ -34,10 +38,17 @@ export class GroupComponent implements OnInit {
   public userGroups: Array<Group> = [];
   public userGroupsIsAdmin: Array<boolean> = [];
   private id_group: number = -1;
-  public admin_id: number = -1;
+
+  public loggedUserId: number = -1;
+  public isAdmin: boolean = false;
+
   public group: Group = new Group();
-  public membersData: User[] = [];
-  public members: Array<GroupMember> = [];
+  public groupMembers: Array<GroupMember> = [];
+
+  public members: Array<User> = [];
+  public admins: Array<User> = [];
+  public totalmembers: Array<User> = [];
+
   public categories: Array<Category> = [];
   public categoryShares: Array<CategoryShare> = [];
 
@@ -47,6 +58,7 @@ export class GroupComponent implements OnInit {
     private groupMemberService: GroupMemberService,
     private categoryService: CategoryService,
     private categoryShareService: CategoryShareService,
+    private authService: AuthService, 
     private snackBarService: SnackbarService, 
     private route: ActivatedRoute,
     private router: Router,
@@ -67,20 +79,26 @@ export class GroupComponent implements OnInit {
     // Get members data
     try {
       const members = await lastValueFrom(this.groupMemberService.getGroupMembers(this.id_group)) as [GroupMember]
-      this.members = members!;
-      this.membersData = new Array;
-      for (const member of this.members) {
-        const userDataArray: Array<User> = await lastValueFrom(this.userService.getUserById(member.id_user)) as Array<User>;
-        if (userDataArray) {
-          if (member.is_admin) {
-            this.admin_id = member.id_user;
-          }
-          this.membersData.push(userDataArray[0]);
+      this.groupMembers = members!;
+      this.admins = new Array<User>;
+      this.members = new Array<User>;
+      for (const member of this.groupMembers) {
+        const user: User = await lastValueFrom(this.userService.getUser(member.id_user)) as User;
+        if (!user){
+          throw Error("group member not found");
+        }
+        if (member.is_admin) {
+          if (member.id_user == this.loggedUserId)
+            this.isAdmin = true;
+          this.admins.push(user);
+        } else {
+          this.members.push(user);
         }
       }
+      this.totalmembers = this.admins.concat(this.members);
     } catch (error) {
       // TODO: handle error
-      this.snackBarService.open('Username already in group', 'info');
+      this.snackBarService.open('Unknown error retreiving members:' + error, 'error');
     }
   }
 
@@ -93,7 +111,7 @@ export class GroupComponent implements OnInit {
       this.categories = categories!;
     } catch (error) {
       // TODO: handle error
-      this.snackBarService.open("getCategories error: " + error, 'info');
+      this.snackBarService.open("getCategories error: " + error, 'error');
     }
   }
 
@@ -102,6 +120,7 @@ export class GroupComponent implements OnInit {
       const href = window.location.href;
       this.id_group = Number(href.split("/").pop()!);
     });
+    this.loggedUserId = this.authService.loggedUserId();
 
     await this.getGroupData();
     await this.getMembersData();
@@ -176,14 +195,14 @@ export class GroupComponent implements OnInit {
   async addUser() : Promise<void> {
     let dialogRef = this.dialog.open(AddUserDialogComponent, {
       width: '250px',
-      data: {title: "Add user to group", content: "Insert the username to add", showError: false, msgError:""}
+      data: {title: "Add user to group", content: "Insert the username to add", showError: false, msgError:"", userIdRequestor: this.authService.loggedUserId()}
     });
     let user_id = await lastValueFrom(dialogRef.afterClosed());
 
     const newGroupMember = new GroupMember;
     newGroupMember.id_user = +user_id; 
     newGroupMember.id_group = this.id_group; 
-    for (const member of this.members) {
+    for (const member of this.totalmembers) {
       if (member.id_user == newGroupMember.id_user){
           this.snackBarService.open('Username already in group', 'info');
           return; 
@@ -192,7 +211,7 @@ export class GroupComponent implements OnInit {
     const groupMember = await lastValueFrom(this.groupMemberService.postGroupMember(newGroupMember)) as GroupMember;
     if (!groupMember) {
       this.snackBarService.open('Could not add user to group', 'error');
-    } 
+    }
     this.snackBarService.open('Added user to group', 'success');
 
     await this.getGroupData();
@@ -202,7 +221,15 @@ export class GroupComponent implements OnInit {
 
   async deleteUser(index:number): Promise<void> {
 
-    let groupMemberDeleteArray = await lastValueFrom(this.groupMemberService.getUserIdGroupIdGroupMembers(this.membersData[index].id_user, this.id_group)) as [GroupMember];
+    const dialogRef = this.dialog.open(DeleteMemberDialogComponent, {
+      width: '250px',
+      data: {title: "Delete member", content: "Are you sure you want to delete this member?"}
+    });
+    const groupCreatedName = await lastValueFrom(dialogRef.afterClosed());
+    if (!groupCreatedName){
+      return;
+    }
+    let groupMemberDeleteArray = await lastValueFrom(this.groupMemberService.getUserIdGroupIdGroupMembers(this.members[index].id_user, this.id_group)) as [GroupMember];
     console.log(groupMemberDeleteArray[0]);
     let groupMemberDelete = await lastValueFrom(this.groupMemberService.deleteGroupMember(groupMemberDeleteArray[0])) as GroupMember;
     console.log(groupMemberDelete);
@@ -211,4 +238,6 @@ export class GroupComponent implements OnInit {
     await this.getMembersData();
     await this.getCategoriesData();
   }
+  
+
 }
