@@ -202,8 +202,13 @@ export class GroupComponent implements OnInit {
   }
 
   async deleteCategory(category: Category): Promise<void> {
-    await lastValueFrom(this.categoryService.deleteCategory(category));
-    await this.getCategoriesData();
+    try{
+      await lastValueFrom(this.categoryService.deleteCategory(category));
+      await this.getCategoriesData();
+    } catch (error) {
+      this.snackBarService.open('' + error, 'info');
+    }
+
   }
 
   async addUser() : Promise<void> {
