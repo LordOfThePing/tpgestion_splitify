@@ -19,6 +19,13 @@ import { CategoryShareService } from '../../services/categoryShare.service';
 import { AuthService } from '../../services/auth.service';
 import { DeleteMemberDialogComponent } from '../../components/deleteMemberDialog/deleteMemberDialog.component';
 import { FlexLayoutModule } from '@angular/flex-layout';
+import {MatIconModule} from '@angular/material/icon';
+import {MatDialogModule} from '@angular/material/dialog';
+import { MatCard } from '@angular/material/card';
+import { MatCardHeader } from '@angular/material/card';
+import { MatCardTitle } from '@angular/material/card';
+import { MatCardContent } from '@angular/material/card';
+
 
 @Component({
   selector: 'app-home',
@@ -29,7 +36,13 @@ import { FlexLayoutModule } from '@angular/flex-layout';
     FormsModule,
     NgIf,
     RouterLink,
-    FlexLayoutModule
+    FlexLayoutModule,
+    MatIconModule,
+    MatDialogModule,
+    MatCard,
+    MatCardHeader,
+    MatCardTitle,
+    MatCardContent
   ],
   templateUrl: './group.component.html',
   styleUrls: ['./group.component.css']
@@ -134,8 +147,8 @@ export class GroupComponent implements OnInit {
   // No es atomico!
   async createCategory(formData: any): Promise<void> {
     try {
+
       let total_percentage = 0;
-      
       // Obtengo datos para las categoryShares
       const newCategoryName = formData.newCategoryName;
       if (newCategoryName === "") {
@@ -183,6 +196,7 @@ export class GroupComponent implements OnInit {
       await this.getMembersData();
       await this.getCategoriesData();
       } catch (error) {
+        console.log("Entré al catch de createCategory!");
         this.snackBarService.open('' + error, 'info');
       }
   }

@@ -1,58 +1,66 @@
 <div class="container">
     
-    <h1 class="display-1">{{ this.group.name }}</h1>
-    <div class="container"
-        fxLayout
-        fxLayoutAlign="center"
-    >
-        
-        <div class="item item-1" fxFlex="30%" 
-
-        >   
-            <h3 class="m-2">Miembros</h3>
-            @if (this.isAdmin){<button class="btn btn-primary mt-4" type="button" (click)="addUser()">Agregar usuario</button>}
-            <table class="table table-striped table-hover">
-                @for (admin of this.admins; track $index) {
-                    <!-- TODO: agregar list-group-item-primary al admin -->
-                    <tr>
-                        <td>
-                            <a class="list-group-item list-group-item-action" [ngClass]="{'list-group-item-success': true}">{{ admin.username }}</a>
-                        </td>
-                        <td>
-                            @if (this.loggedUserId != admin.id_user && this.isAdmin){
-
-                                <button class="btn btn-danger" (click)="deleteUser($index)" >Delete User</button>
-                            }
-                        </td>
-                    </tr>
-                }
-                @for (member of this.members; track $index) {
-                    <!-- TODO: agregar list-group-item-primary al admin -->
-                    <tr>
-                        <td>
-                            <a class="list-group-item list-group-item-action" [ngClass]="{'list-group-item-primary': true}">{{ member.username }}</a>
-                        </td>
-                        <td>
-                            @if (this.isAdmin){
-                                <button class="btn btn-danger" (click)="deleteUser($index)" >Delete User</button>
-                            }
-                        </td>
-                    </tr>
-                }
-            </table>
+    <h1 class="display-1"> <i class="fa fa-users" aria-hidden="true"></i> {{ this.group.name }}</h1>
+    <div class="container" fxLayout fxLayoutAlign="center">
+        <div class="item item-1" fxFlex="50%">
+            <mat-card>
+                <mat-card-header>
+                    <mat-card-title>
+                        <mat-icon>list</mat-icon> Miembros
+                    </mat-card-title>
+                </mat-card-header>
+                <mat-card-content>
+                    <table class="table table-striped table-hover table-bordered">
+                        <thead>
+                            <tr> 
+                                <th>Nombre</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <!-- Loop para los administradores -->
+                        @for (admin of this.admins; track $index) {
+                            <tr>
+                                <td>
+                                    <a class="list-group-item list-group-item-action" [ngClass]="{'list-group-item-success': true}">{{ admin.username }}</a>
+                                </td>
+                                <td>
+                                    <!-- Abrir el bloque de código del if con llaves -->
+                                    <ng-container *ngIf="loggedUserId != admin.id_user && isAdmin">
+                                        <button mat-icon-button color="warn" (click)="deleteUser($index)">
+                                            <mat-icon>delete</mat-icon>
+                                        </button>
+                                    </ng-container>
+                                    <!-- Cerrar el bloque de código del if con llaves -->
+                                </td>
+                            </tr>
+                        }
+                        <!-- Loop para los miembros -->
+                        @for (member of this.members; track $index) {
+                            <tr>
+                                <td>
+                                    <a class="list-group-item list-group-item-action" [ngClass]="{'list-group-item-primary': true}">{{ member.username }}</a>
+                                </td>
+                                <td>
+                                    @if (this.isAdmin){
+                                        <button class="btn btn-danger" (click)="deleteUser($index)" >Delete User</button>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </table>
+                </mat-card-content>
+                @if (this.isAdmin){<button class="btn btn-primary mt-4" type="button" (click)="addUser()">Agregar usuario</button>}
+            </mat-card>
         </div>
-        <div class="item item-2" fxFlex
-
-        > 
-            
-            <div class="m-3 p-3 bg-primary-subtle text-primary-emphasis rounded">
+        <div class="item item-2" fxFlex="50%"> 
+            <div class="p-3 bg-primary-subtle text-primary-emphasis rounded">
                 <form #categoryForm="ngForm" (ngSubmit)="createCategory(categoryForm.value)">
-                    <h4 class="m-8">Nueva Categoría</h4>
-                    <div class="m-4">
+                    <h4 class="m-8"> <mat-icon> add</mat-icon>Nueva Categoría</h4>
+                    <div>
                         <input type="text" class="form-control" id="newCategoryName" name="newCategoryName" placeholder="Nombre" ngModel>
                         @for (member of this.totalmembers; track $index) {
                             <div class="row mt-2">
-                                <div class="col-sm-4 col-form-label text-center">
+                                <div class="col-sm-4 col-form-label">
                                     <h5>{{ member.username }}</h5>
                                 </div>
                                 <div class="col-sm-8">
@@ -65,19 +73,18 @@
                     </div>
                 </form>
             </div>
-            
         </div> 
     </div>
 
     <div class="m-3">
-        <h3>Categorias</h3>
+        <h3><mat-icon>list</mat-icon>Categorias</h3>
         <div class="p-2 text-center">
-            <table class="table table-striped">
+            <table class="table table-striped table-hover">
                 <thead class="thead-dark">
                     <tr>
                         <th scope="col">#</th>
-                        <th scope="col">Titulo</th>
-                        <th scope="col">Descripción</th>
+                        <th scope="col"> Titulo</th>
+                        <th scope="col"><mat-icon>description</mat-icon> Descripción</th>
                         <th scope="col">Acción</th>
                     </tr>
                 </thead>
