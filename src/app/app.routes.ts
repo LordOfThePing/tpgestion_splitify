@@ -32,7 +32,11 @@ export const routes: Routes = [
             {
                 path: 'group/:group_id',
                 loadComponent: () => import('./pages/group/group.component').then((m) => m.GroupComponent),
-            },        
+            },   
+            {
+                path: 'group/config/:group_id',
+                loadComponent: () => import('./pages/group-config/group-config.component').then((m) => m.GroupConfigComponent),
+            },       
         ]
     },
     { 

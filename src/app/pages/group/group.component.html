@@ -1,6 +1,8 @@
-<div class="container">
-    
-    <h1 class="display-1"> <i class="fa fa-users" aria-hidden="true"></i> {{ this.group.name }}</h1>
+<div class="container content">
+    <section class="header-section">
+        <h1 class="title"> <i class="fa fa-users" aria-hidden="true"></i> {{ this.group.name }}</h1>
+        <!-- <button class="btn btn-primary btn-admin" (click)="goTo()">Administrar</button> -->
+    </section>
     <div class="container" fxLayout fxLayoutAlign="center">
         <div class="item item-1" fxFlex="50%">
             <mat-card>
@@ -14,7 +16,7 @@
                         <thead>
                             <tr> 
                                 <th>Nombre</th>
-                                <th>Acciones</th>
+                                <th *ngIf="this.isAdmin">Acciones</th>
                             </tr>
                         </thead>
                         <!-- Loop para los administradores -->
@@ -23,10 +25,10 @@
                                 <td>
                                     <a class="list-group-item list-group-item-action" [ngClass]="{'list-group-item-success': true}">{{ admin.username }}</a>
                                 </td>
-                                <td>
+                                <td *ngIf="this.isAdmin">
                                     <!-- Abrir el bloque de código del if con llaves -->
                                     <ng-container *ngIf="loggedUserId != admin.id_user && isAdmin">
-                                        <button mat-icon-button color="warn" (click)="deleteUser($index)">
+                                        <button color="warn" (click)="deleteUser($index)">
                                             <mat-icon>delete</mat-icon>
                                         </button>
                                     </ng-container>
@@ -42,7 +44,7 @@
                                 </td>
                                 <td>
                                     @if (this.isAdmin){
-                                        <button class="btn btn-danger" (click)="deleteUser($index)" >Delete User</button>
+                                        <button type="button" class="btn btn-danger" (click)="deleteUser($index)">Eliminar usuario</button>
                                     }
                                 </td>
                             </tr>
@@ -52,7 +54,7 @@
                 @if (this.isAdmin){<button class="btn btn-primary mt-4" type="button" (click)="addUser()">Agregar usuario</button>}
             </mat-card>
         </div>
-        <div class="item item-2" fxFlex="50%"> 
+        <div class="item item-2" fxFlex="50%" *ngIf="this.isAdmin"> 
             <div class="p-3 bg-primary-subtle text-primary-emphasis rounded">
                 <form #categoryForm="ngForm" (ngSubmit)="createCategory(categoryForm.value)">
                     <h4 class="m-8"> <mat-icon> add</mat-icon>Nueva Categoría</h4>
@@ -85,7 +87,7 @@
                         <th scope="col">#</th>
                         <th scope="col"> Titulo</th>
                         <th scope="col"><mat-icon>description</mat-icon> Descripción</th>
-                        <th scope="col">Acción</th>
+                        <th scope="col" *ngIf="this.isAdmin">Acción</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -95,7 +97,7 @@
                         <th scope="row">{{$index + 1}}</th>
                         <td>{{category.name}}</td>
                         <td>{{category.description}}</td>
-                        <td>
+                        <td *ngIf="this.isAdmin">
                             <button type="button" class="btn btn-danger" (click)="deleteCategory(category)">Eliminar categoría</button>
                         </td>
                         </tr>

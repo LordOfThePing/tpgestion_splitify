@@ -72,6 +72,8 @@ export class HomeComponent implements OnInit {
       data: {title: "New Group", content: "Insert the new group name", id_user_logged: this.authService.loggedUserId()}
     });
     const groupCreatedName = await lastValueFrom(dialogRef.afterClosed());
+    console.log(groupCreatedName);
+    
     if (groupCreatedName){
       this.snackBarService.open('Group \"' + groupCreatedName + '\" created', 'success');
     }
@@ -97,8 +99,6 @@ export class HomeComponent implements OnInit {
     if (this.authService.isAuth()) {
       this.router.navigate(['/group/' + this.userGroups[index].id_group]);
     }
-
-
   }
 
   deleteGroup(): void {

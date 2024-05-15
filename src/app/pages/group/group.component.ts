@@ -257,6 +257,14 @@ export class GroupComponent implements OnInit {
     await this.getMembersData();
     await this.getCategoriesData();
   }
+
+  goTo(){
+    //this.router.navigate(['/group/config/' + this.userGroups[index].id_group]);
+  }
+
+  isAdminLoggedIn(){
+    return 
+  }
   
 
 }
