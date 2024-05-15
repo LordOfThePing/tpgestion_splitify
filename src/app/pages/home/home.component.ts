@@ -46,7 +46,12 @@ export class HomeComponent implements OnInit {
   }
 
   async createGroup(): Promise<void> {
-    console.log("create group")
+    console.log("create group");
+
+    if (!this.groupName){
+      this.snackBarService.open("Group name can't be empty", 'info');
+      return;
+    }
 
     const groupCreated = await this.createGroupAndGroupMember(); 
     console.log("Group created: " + groupCreated);
@@ -104,6 +109,8 @@ export class HomeComponent implements OnInit {
       let updatedGroup = await lastValueFrom(this.groupService.putGroup(group)) as Group;
       this.snackBarService.open('Group name updated', 'success');
       this.refreshGroups();
+    } else {
+      this.snackBarService.open("Group name can't be empty", 'info');
     }
 
   }
