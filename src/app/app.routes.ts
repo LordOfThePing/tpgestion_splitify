@@ -25,11 +25,6 @@ export const routes: Routes = [
             },
             // Acá irian otras rutas que solo se accede autenticado
             {
-                path: '', 
-                redirectTo: 'home', 
-                pathMatch: 'full'
-            },
-            {
                 path: 'group/:group_id',
                 loadComponent: () => import('./pages/group/group.component').then((m) => m.GroupComponent),
             },   

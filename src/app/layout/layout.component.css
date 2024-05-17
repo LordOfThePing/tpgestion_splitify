@@ -1,3 +1,11 @@
 mat-sidenav-container{
     height: 100%;
 }
+
+.item{
+    align-items: center;
+}
+
+mat-icon {
+    vertical-align: middle;
+}
