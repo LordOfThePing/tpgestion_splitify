@@ -25,6 +25,9 @@ import { MatCard } from '@angular/material/card';
 import { MatCardHeader } from '@angular/material/card';
 import { MatCardTitle } from '@angular/material/card';
 import { MatCardContent } from '@angular/material/card';
+import { ExpenditureService } from '../../services/expenditure.service';
+import { Expenditure } from '../../../classes/expenditure';
+import { AddExpenditureDialogComponent } from '../../components/addExpenditureDialog/addExpenditureDialog.component';
 
 
 @Component({
@@ -64,12 +67,14 @@ export class GroupComponent implements OnInit {
 
   public categories: Array<Category> = [];
   public categoryShares: Array<CategoryShare> = [];
+  public expenditures: Array<Expenditure> = [];
 
   constructor(
     private userService: UserService,
     private groupService: GroupService, 
     private groupMemberService: GroupMemberService,
     private categoryService: CategoryService,
+    private expenditureService: ExpenditureService,
     private categoryShareService: CategoryShareService,
     private authService: AuthService, 
     private snackBarService: SnackbarService, 
@@ -77,7 +82,7 @@ export class GroupComponent implements OnInit {
     private router: Router,
     public dialog: MatDialog
   ) { }
-
+  
   async getGroupData(): Promise<void> {
     try {
       const groupData = await lastValueFrom(this.groupService.getGroupById(this.id_group));
@@ -128,6 +133,23 @@ export class GroupComponent implements OnInit {
     }
   }
 
+  async getExpendituresData(): Promise<void> {
+    // Get expenditures data
+    try {
+      const expenditures = await lastValueFrom(this.expenditureService.getGroupExpenditures(this.id_group));
+      this.expenditures = expenditures!;
+    } catch (error) {
+      // TODO: handle error
+      this.snackBarService.open("getExpenditures error: " + error, 'error');
+    }
+  }
+  async refreshData(): Promise<void> {
+    await this.getGroupData();
+    await this.getMembersData();
+    await this.getCategoriesData();
+    await this.getExpendituresData();
+  }
+
   async ngOnInit(): Promise<void> {
     this.route.paramMap.subscribe((params: ParamMap) => {
       const href = window.location.href;
@@ -135,9 +157,7 @@ export class GroupComponent implements OnInit {
     });
     this.loggedUserId = this.authService.loggedUserId();
 
-    await this.getGroupData();
-    await this.getMembersData();
-    await this.getCategoriesData();
+    await this.refreshData();
 
   }
 
@@ -194,9 +214,8 @@ export class GroupComponent implements OnInit {
       }
 
       // Refresco la lista de categorias
-      await this.getGroupData();
-      await this.getMembersData();
-      await this.getCategoriesData();
+      await this.refreshData();
+
       } catch (error) {
         console.log("Entré al catch de createCategory!");
         this.snackBarService.open('' + error, 'info');
@@ -215,8 +234,9 @@ export class GroupComponent implements OnInit {
       }
       await lastValueFrom(this.categoryShareService.deleteCategoryCategoryShares(category.id_category));
       await lastValueFrom(this.categoryService.deleteCategory(category.id_category));
-      await this.getCategoriesData();
+      
       this.snackBarService.open('Category deleted', 'success');
+      await this.refreshData();
     } catch (error) {
       this.snackBarService.open('' + error, 'error');
     }
@@ -245,9 +265,8 @@ export class GroupComponent implements OnInit {
     }
     this.snackBarService.open('Added user to group', 'success');
 
-    await this.getGroupData();
-    await this.getMembersData();
-    await this.getCategoriesData();
+    await this.refreshData();
+
   }
 
   async deleteUser(index:number): Promise<void> {
@@ -265,9 +284,19 @@ export class GroupComponent implements OnInit {
     let groupMemberDelete = await lastValueFrom(this.groupMemberService.deleteGroupMember(groupMemberDeleteArray[0])) as GroupMember;
     console.log(groupMemberDelete);
     this.snackBarService.open('User deleted', 'success');
-    await this.getGroupData();
-    await this.getMembersData();
-    await this.getCategoriesData();
+    await this.refreshData();
+
+  }
+
+  async createExpenditure() : Promise<void> {
+    let dialogRef = this.dialog.open(AddExpenditureDialogComponent, {
+      width: '500px', 
+      data: {}
+    });
+    await lastValueFrom(dialogRef.afterClosed());
+
+    await this.refreshData();
+
   }
 
   goTo(){

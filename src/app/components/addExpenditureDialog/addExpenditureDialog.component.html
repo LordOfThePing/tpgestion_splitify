@@ -1,0 +1,37 @@
+<h1 mat-dialog-title>Agregar Gasto</h1>
+<div class="content">
+  <div mat-dialog-content>
+    <p>Ingrese la cantidad gastada</p>
+    <mat-form-field>
+      <input matInput [(ngModel)]="data.amount" cdkFocusInitial>
+    </mat-form-field>
+    @if (data.showAmountError) {
+      <mat-error 
+      >{{data.msgAmountError}}</mat-error>
+    }
+  </div>
+  <div mat-dialog-content>
+    <p>Ingrese la categoría del gasto</p>
+    <mat-form-field>
+      <input matInput [(ngModel)]="data.category" cdkFocusInitial>
+    </mat-form-field>
+    @if (data.showCategorySelectError) {
+      <mat-error 
+      >{{data.msgCategorySelectError}}</mat-error>
+    }
+  </div>
+  <div mat-dialog-content>
+    <p>Ingrese una descripción</p>
+    <mat-form-field>
+      <input matInput [(ngModel)]="data.description" cdkFocusInitial>
+    </mat-form-field>
+    @if (data.showDescriptionError) {
+      <mat-error 
+      >{{data.msgDescriptionError}}</mat-error>
+    }
+  </div>
+</div>
+  <div mat-dialog-actions>
+    <button mat-button (click)="onNoClick()">No Thanks</button>
+  <button mat-button  (click)="onClick()" >Ok</button>
+</div>
