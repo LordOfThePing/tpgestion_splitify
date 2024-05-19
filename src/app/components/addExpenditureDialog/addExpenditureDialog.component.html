@@ -1,19 +1,21 @@
 <h1 mat-dialog-title>Agregar Gasto</h1>
 <div class="content">
   <div mat-dialog-content>
-    <p>Ingrese la cantidad gastada</p>
-    <mat-form-field>
+    <mat-form-field >
+      <mat-label>$</mat-label>
       <input matInput [(ngModel)]="data.amount" cdkFocusInitial>
     </mat-form-field>
     @if (data.showAmountError) {
       <mat-error 
       >{{data.msgAmountError}}</mat-error>
     }
-  </div>
-  <div mat-dialog-content>
-    <p>Ingrese la categoría del gasto</p>
-    <mat-form-field>
-      <input matInput [(ngModel)]="data.category" cdkFocusInitial>
+    <mat-form-field class="tag">
+      <mat-label>Categoría</mat-label>
+      <mat-select [(ngModel)]="data.category" placeholder="Categoría">
+        @for(category of this.data.categories; track $index){
+          <mat-option value={{category.name}}>{{category.name}}</mat-option>
+        }
+      </mat-select>
     </mat-form-field>
     @if (data.showCategorySelectError) {
       <mat-error 
@@ -22,7 +24,7 @@
   </div>
   <div mat-dialog-content>
     <p>Ingrese una descripción</p>
-    <mat-form-field>
+    <mat-form-field [style.width.%]=100>
       <input matInput [(ngModel)]="data.description" cdkFocusInitial>
     </mat-form-field>
     @if (data.showDescriptionError) {

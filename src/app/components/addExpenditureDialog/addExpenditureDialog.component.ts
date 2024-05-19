@@ -4,13 +4,18 @@ import {MatDialogRef, MAT_DIALOG_DATA, MatDialogModule} from '@angular/material/
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
+import {MatSelectModule} from '@angular/material/select';
+
 import { FormsModule } from '@angular/forms';
 import { UserService } from '../../services/user.service';
+import { MatOptionModule } from '@angular/material/core';
+import { Category } from '../../../classes/category';
 export interface AddExpenditureDialogData {
   value: string; 
   amount: number;
   category: string; 
   description: string; 
+  categories: Array<Category>;
   showAmountError: boolean;
   msgAmountError: string;  
   showCategorySelectError: boolean;
@@ -23,7 +28,7 @@ export interface AddExpenditureDialogData {
   selector: 'addExpenditureDialog.component',
   templateUrl: 'addExpenditureDialog.component.html',
   standalone: true,
-  imports: [MatDialogModule, FormsModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatIconModule]
+  imports: [MatDialogModule, FormsModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatIconModule, MatOptionModule, MatSelectModule]
 })
 export class AddExpenditureDialogComponent {
   

@@ -291,7 +291,7 @@ export class GroupComponent implements OnInit {
   async createExpenditure() : Promise<void> {
     let dialogRef = this.dialog.open(AddExpenditureDialogComponent, {
       width: '500px', 
-      data: {}
+      data: {categories: this.categories}
     });
     await lastValueFrom(dialogRef.afterClosed());
 
