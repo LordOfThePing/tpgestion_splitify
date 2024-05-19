@@ -33,6 +33,7 @@ export const routes: Routes = [
                 loadComponent: () => import('./pages/group-config/group-config.component').then((m) => m.GroupConfigComponent),
             },       
         ]
+
     },
     { 
         path: '**', // cualquier otra ruta que no exista

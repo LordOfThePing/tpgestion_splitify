@@ -155,7 +155,11 @@ export class GroupComponent implements OnInit {
         this.snackBarService.open("El nombre de la categoría no puede estar vacío", 'info');
         return;
       }
-      
+      const newCategoryDescription = formData.newCategoryDescription;
+      if (newCategoryDescription === "") {
+        this.snackBarService.open("La descripción de la categoría no puede estar vacía", 'info');
+        return;
+      }
       let newCategoryShares: Array<CategoryShare> = new Array<CategoryShare>;
       for (const key in formData) {
         if (!key.startsWith("percentage")) {
@@ -165,9 +169,7 @@ export class GroupComponent implements OnInit {
         
         let categoryShare = new CategoryShare();
         categoryShare.id_cs = 0; // se setea pero no se usa. Se genera uno nuevo en la base de datos. 
-        categoryShare.id_group = this.id_group;
         categoryShare.id_user = id_user;
-        categoryShare.category_name = newCategoryName;
         categoryShare.share_percentage = Number(formData[key]);
         total_percentage += categoryShare.share_percentage;
         newCategoryShares.push(categoryShare as CategoryShare);
@@ -181,7 +183,7 @@ export class GroupComponent implements OnInit {
       // Creo la Category
       const newCategory = new Category();
       newCategory.name = newCategoryName;
-      newCategory.description = "Por ahora no tenemos input de descripcion.";
+      newCategory.description = newCategoryDescription;
       newCategory.id_group = this.id_group;
       await lastValueFrom(this.categoryService.createCategory(newCategory)) as Category;
       console.log(newCategoryShares); 
@@ -202,11 +204,21 @@ export class GroupComponent implements OnInit {
   }
 
   async deleteCategory(category: Category): Promise<void> {
-    try{
-      await lastValueFrom(this.categoryService.deleteCategory(category));
+    try {
+      const dialogRef = this.dialog.open(DeleteMemberDialogComponent, {
+        width: '250px',
+        data: {title: "Delete category", content: "Are you sure you want to delete this category?"}
+      });
+      const response = await lastValueFrom(dialogRef.afterClosed());
+      if (!response){
+        return;
+      }
+      await lastValueFrom(this.categoryShareService.deleteCategoryCategoryShares(category.id_category));
+      await lastValueFrom(this.categoryService.deleteCategory(category.id_category));
       await this.getCategoriesData();
+      this.snackBarService.open('Category deleted', 'success');
     } catch (error) {
-      this.snackBarService.open('' + error, 'info');
+      this.snackBarService.open('' + error, 'error');
     }
 
   }

@@ -33,8 +33,8 @@ export class CategoryService {
         );
     }
 
-    deleteCategory(category: Category): Observable<Category|null> {
-        return this.http.post<ResponseModel<Category>>(`${environment.apiUrl}/deleteCategory`, category)
+    deleteCategory(category_id: number): Observable<Category|null> {
+        return this.http.delete<ResponseModel<Category>>(`${environment.apiUrl}/category/` + category_id)
             .pipe(
                 map(response => {
                     if (response && response.message === "OK" && response.dataModel) {
