@@ -67,8 +67,7 @@
                                     <h5>{{ member.username }}</h5>
                                 </div>
                                 <div class="col-sm-8">
-                                    <input type="numeric" min="0" max="100" class="form-control" [name]="'percentage' + $index" placeholder="porcentaje" ngModel>
-                                    <!-- <input type="numeric" min="0" max="100" class="form-control" [name]="'percentage' + member.id" placeholder="porcentaje" ngModel> -->
+                                    <input type="numeric" min="0" max="100" class="form-control" [name]="'percentage' + member.id_user" placeholder="porcentaje" ngModel>
                                 </div>
                             </div>
                         }

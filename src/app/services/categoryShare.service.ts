@@ -60,7 +60,7 @@ export class CategoryShareService {
                     if (response && response.message === "OK" && response.dataModel) {
                         return response.dataModel;
                     } else if (response && response.message === "ERROR") {
-                        return null
+                        throw new Error(response.detail)
                     } else {
                         throw new Error('Failed to deserialize response or invalid data received');
                     }

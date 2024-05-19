@@ -66,7 +66,6 @@ export class GroupComponent implements OnInit {
   public totalmembers: Array<User> = [];
 
   public categories: Array<Category> = [];
-  public categoryShares: Array<CategoryShare> = [];
   public expenditures: Array<Expenditure> = [];
 
   constructor(
@@ -123,8 +122,6 @@ export class GroupComponent implements OnInit {
   async getCategoriesData(): Promise<void> {
     // Get categories data
     try {
-      const categoryShares = await lastValueFrom(this.categoryShareService.getGroupCategoryShares(this.id_group));
-      this.categoryShares = categoryShares!;
       const categories = await lastValueFrom(this.categoryService.getGroupCategories(this.id_group));
       this.categories = categories!;
     } catch (error) {
@@ -161,10 +158,7 @@ export class GroupComponent implements OnInit {
 
   }
 
-  // Este método esta sobrecargadisimo
-  // Tiene que pegarle al backend para crear una Category
-  // Y despues multiples veces para crear los CategoryShares de esa Category
-  // No es atomico!
+
   async createCategory(formData: any): Promise<void> {
     try {
 
@@ -205,20 +199,21 @@ export class GroupComponent implements OnInit {
       newCategory.name = newCategoryName;
       newCategory.description = newCategoryDescription;
       newCategory.id_group = this.id_group;
-      await lastValueFrom(this.categoryService.createCategory(newCategory)) as Category;
+      let createdCategory = await lastValueFrom(this.categoryService.createCategory(newCategory)) as Category;
       console.log(newCategoryShares); 
       // Creo los CategoryShares
-      while (newCategoryShares.length > 0) {
-        let cs = newCategoryShares.pop(); 
+      for (const cs of newCategoryShares){
+        cs.id_category = createdCategory.id_category; 
         await lastValueFrom(this.categoryShareService.createCategoryShare(cs as CategoryShare)) as CategoryShare;
       }
 
+      this.snackBarService.open('Category created', 'success');
       // Refresco la lista de categorias
       await this.refreshData();
 
       } catch (error) {
         console.log("Entré al catch de createCategory!");
-        this.snackBarService.open('' + error, 'info');
+        this.snackBarService.open('' + error, 'error');
       }
   }
 
@@ -291,9 +286,13 @@ export class GroupComponent implements OnInit {
   async createExpenditure() : Promise<void> {
     let dialogRef = this.dialog.open(AddExpenditureDialogComponent, {
       width: '500px', 
-      data: {categories: this.categories}
+      data: {categories: this.categories, userIdRequestor: this.authService.loggedUserId(), groupId: this.id_group}
     });
-    await lastValueFrom(dialogRef.afterClosed());
+    let rsp = await lastValueFrom(dialogRef.afterClosed());
+    if (!rsp){
+      return;
+    }
+    this.snackBarService.open('Expenditure created', 'success');
 
     await this.refreshData();
 
