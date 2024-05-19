@@ -28,6 +28,7 @@ import { MatCardContent } from '@angular/material/card';
 import { ExpenditureService } from '../../services/expenditure.service';
 import { Expenditure } from '../../../classes/expenditure';
 import { AddExpenditureDialogComponent } from '../../components/addExpenditureDialog/addExpenditureDialog.component';
+import { ListSharesDialogComponent } from '../../components/listSharesDialog/listSharesDialog.component';
 
 
 @Component({
@@ -51,6 +52,7 @@ import { AddExpenditureDialogComponent } from '../../components/addExpenditureDi
   styleUrls: ['./group.component.css']
 })
 export class GroupComponent implements OnInit {
+
   public userGroups: Array<Group> = [];
   public userGroupsIsAdmin: Array<boolean> = [];
   private id_group: number = -1;
@@ -237,7 +239,24 @@ export class GroupComponent implements OnInit {
     }
 
   }
-
+  async detailCategory(category: Category): Promise<void> {
+    try {
+      let category_shares = await lastValueFrom(this.categoryShareService.getCategoryCategoryShares(category.id_category));
+      if (!category_shares) {
+        throw Error("not found category shares");
+      }
+      const dialogRef = this.dialog.open(ListSharesDialogComponent, {
+        width: '250px',
+        data: {category: category, category_shares: category_shares}
+      });
+      const response = await lastValueFrom(dialogRef.afterClosed());
+      if (!response){
+        return;
+      }
+    } catch (error) {
+      this.snackBarService.open('' + error, 'error');
+    }
+  }
   async addUser() : Promise<void> {
     let dialogRef = this.dialog.open(AddUserDialogComponent, {
       width: '250px',

@@ -97,8 +97,9 @@
                         <td scope="row">{{$index + 1}}</td>
                         <td>{{category.name}}</td>
                         <td>{{category.description}}</td>
-                        <td *ngIf="this.isAdmin">
-                            <button type="button" class="btn btn-danger" (click)="deleteCategory(category)">Eliminar categoría</button>
+                        <td>
+                            <button type="button" class="btn btn-primary" (click)="detailCategory(category)">Detalle</button>
+                            <button *ngIf="this.isAdmin" type="button" class="btn btn-danger" (click)="deleteCategory(category)">Eliminar categoría</button>
                         </td>
                         </tr>
                     }

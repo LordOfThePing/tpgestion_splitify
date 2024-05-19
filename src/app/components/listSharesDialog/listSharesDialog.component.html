@@ -1,0 +1,16 @@
+<h1 mat-dialog-title>Detalle de categoría</h1>
+<div mat-dialog-content>
+  @for(cat_sh of this.data.category_shares; track $index){
+    <div class="row">
+      <div class="col-md-4">
+        <p>{{this.data.usernames[$index]}}</p>
+      </div>
+      <div class="col-md-8">
+        {{cat_sh.share_percentage}} %
+      </div>
+    </div>
+  }
+</div>
+<div mat-dialog-actions>
+  <button mat-button (click)="onClick()" >Ok</button>
+</div>
