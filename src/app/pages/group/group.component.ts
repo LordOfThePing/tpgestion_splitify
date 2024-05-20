@@ -21,6 +21,7 @@ import { DeleteMemberDialogComponent } from '../../components/deleteMemberDialog
 import { FlexLayoutModule } from '@angular/flex-layout';
 import {MatIconModule} from '@angular/material/icon';
 import {MatDialogModule} from '@angular/material/dialog';
+import { MatTableModule, MatTableDataSource  } from '@angular/material/table';
 import { MatCard } from '@angular/material/card';
 import { MatCardHeader } from '@angular/material/card';
 import { MatCardTitle } from '@angular/material/card';
@@ -29,8 +30,13 @@ import { ExpenditureService } from '../../services/expenditure.service';
 import { Expenditure } from '../../../classes/expenditure';
 import { AddExpenditureDialogComponent } from '../../components/addExpenditureDialog/addExpenditureDialog.component';
 import { ListSharesDialogComponent } from '../../components/listSharesDialog/listSharesDialog.component';
+import { MatButton } from '@angular/material/button';
 
-
+export interface MembersTableElement {
+  id_user: number; 
+  username: string;
+  type: string;
+}
 @Component({
   selector: 'app-home',
   standalone: true,
@@ -46,7 +52,8 @@ import { ListSharesDialogComponent } from '../../components/listSharesDialog/lis
     MatCard,
     MatCardHeader,
     MatCardTitle,
-    MatCardContent
+    MatCardContent, 
+    MatTableModule
   ],
   templateUrl: './group.component.html',
   styleUrls: ['./group.component.css']
@@ -69,6 +76,10 @@ export class GroupComponent implements OnInit {
 
   public categories: Array<Category> = [];
   public expenditures: Array<Expenditure> = [];
+
+  public displayedColumnsMembers: string[] = ['username', 'type', 'actions'];
+  public dataSourceMembers = new MatTableDataSource<MembersTableElement>([]);
+  
 
   constructor(
     private userService: UserService,
@@ -97,24 +108,33 @@ export class GroupComponent implements OnInit {
   async getMembersData(): Promise<void> {
     // Get members data
     try {
+      let arrayMembers = new Array;  
       const members = await lastValueFrom(this.groupMemberService.getGroupMembers(this.id_group)) as [GroupMember]
       this.groupMembers = members!;
       this.admins = new Array<User>;
       this.members = new Array<User>;
       for (const member of this.groupMembers) {
+        let elm : MembersTableElement = {id_user: 0, username: "", type: ""};
         const user: User = await lastValueFrom(this.userService.getUser(member.id_user)) as User;
         if (!user){
           throw Error("group member not found");
         }
+        elm.id_user = user.id_user;
+        elm.username = user.username; 
         if (member.is_admin) {
           if (member.id_user == this.loggedUserId)
             this.isAdmin = true;
           this.admins.push(user);
+          elm.type = "admin"; 
+          arrayMembers.push(elm); 
         } else {
+          elm.type = "member"; 
           this.members.push(user);
+          arrayMembers.push(elm); 
         }
       }
       this.totalmembers = this.admins.concat(this.members);
+      this.dataSourceMembers.data = arrayMembers; 
     } catch (error) {
       // TODO: handle error
       this.snackBarService.open('Unknown error retreiving members:' + error, 'error');

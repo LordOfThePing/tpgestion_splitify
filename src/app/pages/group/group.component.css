@@ -15,3 +15,12 @@ mat-icon {
     vertical-align: middle;
 }
 
+.buttons{
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+.make-gold {
+    background-color: #cccccc
+}
