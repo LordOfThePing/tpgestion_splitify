@@ -106,6 +106,7 @@ export class AddExpenditureDialogComponent {
         } else {
           this.data.showDescriptionError = false;
         }
+        
         let expenditure = new Expenditure;
         expenditure.amount = this.data.amount;  
         expenditure.description = this.data.description;  

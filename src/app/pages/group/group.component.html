@@ -120,6 +120,8 @@
                         <td>{{e.description}}</td>
                         <td>{{e.amount}}</td>
                         <td *ngIf="this.isAdmin">
+                            <button type="button" class="btn btn-danger" (click)="deleteExpenditure(e)">Eliminar Gasto</button>
+                            <button type="button" class="btn btn-primary" (click)="updateExpenditure(e)">Editar Gasto</button>
                         </td>
                         </tr>
                     }

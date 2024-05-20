@@ -31,6 +31,10 @@ import { Expenditure } from '../../../classes/expenditure';
 import { AddExpenditureDialogComponent } from '../../components/addExpenditureDialog/addExpenditureDialog.component';
 import { ListSharesDialogComponent } from '../../components/listSharesDialog/listSharesDialog.component';
 import { MatButton } from '@angular/material/button';
+import { UpdateExpenditureDialogComponent } from '../../components/updateExpenditureDialog/update-expenditure-dialog/updateExpenditureDialog.component';
+import { DeleteExpenditureDialogComponent } from '../../components/deleteExpenditureDialog/delete-expenditure-dialog/deleteExpenditureDialog.component';
+
+
 
 export interface MembersTableElement {
   id_user: number; 
@@ -334,7 +338,48 @@ export class GroupComponent implements OnInit {
     this.snackBarService.open('Expenditure created', 'success');
 
     await this.refreshData();
+  }
 
+  async deleteExpenditure(expenditure: Expenditure): Promise<void> {
+    try{
+      console.log(expenditure);
+      const dialogRef = this.dialog.open(DeleteExpenditureDialogComponent, {
+        width: '250px',
+        data: {title: "Delete expenditure", content: "Are you sure you want to delete this expenditure?"}
+      });
+      const response = await lastValueFrom(dialogRef.afterClosed());
+      if (!response){
+        return;
+      }
+      
+      // Acá se debe hacer el llamado al servicio de expenditureService? o se llama dentro del componente de DeleteExpenditureDialogComponent? aclarar que no estan bien estas 2 lineas dado que (expenditure.id_expenditure == undefined)
+
+      //await lastValueFrom(this.expenditureService.deleteExpenditure(expenditure.id_expenditure));
+      // await lastValueFrom(this.expenditureService.deleteExpenditureShare(expenditure.id_expenditure));
+
+      this.snackBarService.open('Expenditure deleted (NO LO BORRA DE LA BASE DE DATOS TODAVIA!)', 'success');
+      await this.refreshData();
+    }
+    catch(error){
+      console.log("Entré al catch de deleteExpenditure!");
+      this.snackBarService.open('' + error, 'error');
+    }
+  }
+
+  async updateExpenditure(expenditure: Expenditure): Promise<void> {
+    //Hace falta actualizar la lista de categorias
+    let dialogRef = this.dialog.open(UpdateExpenditureDialogComponent, {
+      width: '500px', 
+      data: {categories: this.categories, userIdRequestor: this.authService.loggedUserId(), groupId: this.id_group, expenditure: expenditure}
+    });
+    let rsp = await lastValueFrom(dialogRef.afterClosed());
+    if (!rsp){
+      return;
+    }
+
+    //Acá va el llamado al servicio de expenditures? ó adentro de UpdateExpenditureDialogComponent?
+    this.snackBarService.open('Expenditure updated', 'success');
+    await this.refreshData();
   }
 
   goTo(){
