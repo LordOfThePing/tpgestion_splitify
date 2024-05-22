@@ -1,0 +1,43 @@
+<div class="container content bg-primary-subtle rounded">
+    <section class="header-section">
+        <h2 class="title">Groups</h2>
+        <button class="btn btn-success"  (click)="createGroup()">Create Group</button>
+    </section>
+
+    <!-- table -->
+    <table class="table table-striped table-hover">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Name</th>
+                <th>Time Created</th>
+                <th>Role</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @for (group of userGroups; track $index) {
+                <tr>
+                    <td (click)="enterGroup($index)">{{ group.id_group }}</td>
+                    <td (click)="enterGroup($index)">{{ group.name }}</td>
+                    <td (click)="enterGroup($index)">{{ group.time_created }}</td>
+                    <td>
+                        @if(userGroupsIsAdmin[$index]){
+                            Admin
+                        } @else {
+                            Member
+                        }
+                    </td>
+                    <td class="buttons col-md">
+                        <button class="btn btn-primary" [routerLink]="'/group/' + group.id_group">Ver</button>
+                        @if(userGroupsIsAdmin[$index]){
+                            <button class="btn btn-primary" (click)="editGroupName($index)" >Editar Nombre</button>
+                        }
+                        <button class="btn btn-danger" (click)="deleteGroup()" hidden >Borrar</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+

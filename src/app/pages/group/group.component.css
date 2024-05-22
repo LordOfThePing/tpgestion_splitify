@@ -1,0 +1,26 @@
+.btn-admin{
+    background-color: #3f51b5
+}
+
+.container {
+    margin-top: 30px;
+    gap: 30px;
+}
+
+mat-icon {
+    vertical-align: middle;
+}
+
+.rows{
+    vertical-align: middle;
+}
+
+.buttons{
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+.make-gold {
+    background-color: #cccccc
+}

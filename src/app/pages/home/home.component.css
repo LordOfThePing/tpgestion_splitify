@@ -1,0 +1,19 @@
+button{
+    background-color: #3f51b5
+}
+
+table{
+    margin-top: 10px;
+}
+
+.buttons{
+    display: flex;
+    justify-content: left;
+    gap: 10px;
+}
+
+.content{
+    max-width: 60%;
+    min-width: fit-content;
+    margin-top: 40px;
+}

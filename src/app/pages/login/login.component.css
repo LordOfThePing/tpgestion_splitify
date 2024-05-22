@@ -1,0 +1,23 @@
+.content{
+    height: 100%;
+    display: flex;
+    align-items: center;
+    background-color: #e7e7e7;
+}
+
+mat-card {
+    max-width: 400px;
+    margin: 0 auto;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+}
+
+form{
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    gap: 15px;
+    margin: 2rem;
+}

@@ -1,0 +1,15 @@
+<h1 mat-dialog-title>{{data.title}}</h1>
+<div mat-dialog-content>
+  <p>{{data.content}}</p>
+  <mat-form-field>
+    <input matInput [(ngModel)]="data.value" cdkFocusInitial>
+  </mat-form-field>
+  @if (data.showError) {
+    <mat-error 
+    >{{data.msgError}}</mat-error>
+  }
+  </div>
+<div mat-dialog-actions>
+  <button mat-button (click)="onNoClick()">No Thanks</button>
+  <button mat-button [mat-dialog-close]="data.value">Ok</button>
+</div>

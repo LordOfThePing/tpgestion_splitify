@@ -1,0 +1,24 @@
+<h1 mat-dialog-title>Detalle de categoría</h1>
+<div mat-dialog-content>
+
+  <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+
+  <!-- Username Column -->
+  <ng-container matColumnDef="username">
+    <th mat-header-cell *matHeaderCellDef> Username </th>
+    <td mat-cell *matCellDef="let element"> {{element.username}} </td>
+  </ng-container>
+
+  <!-- Share Percentage Column -->
+  <ng-container matColumnDef="sharePercentage">
+    <th mat-header-cell *matHeaderCellDef> Porcentaje </th>
+    <td mat-cell *matCellDef="let element"> {{element.sharePercentage}} </td>
+  </ng-container>
+
+  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+  <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+  </table>
+</div>
+<div mat-dialog-actions class="buttons">
+  <button mat-button (click)="onClick()" >Ok</button>
+</div>
