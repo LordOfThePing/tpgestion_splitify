@@ -116,6 +116,8 @@ export class ExpenditureService {
         map(response => {
           if (response && response.message === "OK" && response.dataModel) {
             return response.dataModel;
+          } else if (response && response.message === "NOT FOUND") {
+            return null;
           } else if (response && response.message === "ERROR") {
             return null;
           } else {
